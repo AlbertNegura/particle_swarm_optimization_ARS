@@ -37,6 +37,8 @@ class Particle:
             # if v(t+1) is larger, clip it to vmax
             if self.velocity[i] > 1:
                 self.velocity[i] = 1
+            elif self.velocity[i] < -1:
+                self.velocity[i] = -1
 
     def update_position(self):
         for i in range(2):
