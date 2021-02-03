@@ -39,5 +39,7 @@ def pso():
             swarm[j].update_position()
         i+=1
 
+pso()
+
 if __name__ == "__main__":
     print("AAAAAAAA")
