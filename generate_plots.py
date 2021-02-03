@@ -7,6 +7,7 @@ import math
 import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
+import matplotlib.animation as animation
 from matplotlib import cm
 
 
@@ -74,6 +75,7 @@ def cost_plot(data, function, ax):
     ax.title.set_text('Min Cost Function')
     ax.plot(data, lw=3)
 
+#ani3 = animation.FuncAnimation(fig, animate3, frames=iterations, fargs=[],interval=100, blit=False, repeat=True)
 
 if __name__ == "__main__":
     #plot_all([],[],"rastrigin")
