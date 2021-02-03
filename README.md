@@ -1,1 +1,1 @@
-# particle_swarm_optimization_ARS
+# Particle Swarm Optimization
