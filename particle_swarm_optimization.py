@@ -13,7 +13,7 @@ c = 2.0
 
 a_range = np.linspace(a, 0.4, 50)
 
-bounds = [-5,5]
+bounds = [-5.12,5.12]
 neighbourhood = "global" # social, geographical
 
 
