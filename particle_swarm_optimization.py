@@ -23,7 +23,7 @@ def pso():
     pos_best_cost = []
     x0 = np.random.rand(population, 2)
     swarm = [Particle(x0[i,:]) for i in range(population)]
-
+    position_matrix = [[0 for x in range(population)] for y in range(iterations)]
 
     i = 0
     while i < iterations:
@@ -37,6 +37,7 @@ def pso():
         for j in range(population):
             swarm[j].update_velocity(a, b, c, pos_best_cost)
             swarm[j].update_position()
+            position_matrix[i][j] = swarm[j].position
         i+=1
 
 pso()
