@@ -11,7 +11,8 @@ class Particle:
 
     def __init__(self, position, bounds=[-1,1]):
         self.position = position.copy()
-        self.velocity = [random.uniform(bounds[0],bounds[1])]
+        self.velocity = [random.uniform(bounds[0],bounds[1]),random.uniform(bounds[0],bounds[1])]
+        self.best_minimum_position = position.copy()
 
     def evaluate(self, function):
         b = 1
@@ -27,14 +28,19 @@ class Particle:
         elif function == "rosenbrock":  # rosenbrock a=0,b=1
             self.cost = b*(y - x ** 2) ** 2 + (a-x) ** 2
 
-    def update_velocity(self, a, b, c):
+    def update_velocity(self, a, b, c, pos_best_cost):
         r1 = random()
         r2 = random()
-
-        # add velocity update
+        
+        for i range(2):
+            self.velocity[i] = a*self.velocity[i] + b*r1*(self.best_minimum_position[i]-self.position[i]) + c*r2*(pos_best_cost[i]-self.position[i])
+            # if v(t+1) is larger, clip it to vmax
+            if self.velocity(i) > 1:
+                self.velocity(i) = 1
 
     def update_position(self):
-        pass
+        for i range(2):
+            self.position[i] = self.position[i] + self.velocity[i]
 
 
 if __name__ == "__main__":

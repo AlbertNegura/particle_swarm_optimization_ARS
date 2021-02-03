@@ -35,7 +35,7 @@ def pso():
                 best_cost = swarm[j].cost
 
         for j in range(population):
-            swarm[j].update_velocity()
+            swarm[j].update_velocity(a, b, c, pos_best_cost)
             swarm[j].update_position()
         i+=1
 
