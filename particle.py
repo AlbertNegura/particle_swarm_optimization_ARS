@@ -16,12 +16,14 @@ class Particle:
     def evaluate(self, function):
         b = 1
         a = 0
+        A = 10
+        dimensions = 2
 
         x = self.position[0]
         y = self.position[1]
 
         if function == "rastrigin":  # rastrigin
-            self.cost = (x ** 2 - 10 * np.cos(math.pi * 2 * x ** 2)) + (y ** 2 - 10 * np.cos(math.pi * 2 * y ** 2))
+            self.cost = A * dimensions * (x ** 2 - A * np.cos(math.pi * 2 * x)) + (y ** 2 - A * np.cos(math.pi * 2 * y))
         elif function == "rosenbrock":  # rosenbrock a=0,b=1
             self.cost = b*(y - x ** 2) ** 2 + (a-x) ** 2
 
