@@ -25,7 +25,7 @@ def plot_all(positions, cost, function):
     ax3 = fig.add_subplot(223)
     contour_plot(positions, function, ax1)
     surface_plot(positions, function, ax2)
-    cost_plot(positions, function, ax3)
+    cost_plot(cost, function, ax3)
     plt.show()
 
 def function_of(x, y, function):
@@ -50,6 +50,9 @@ def contour_plot(data, function, ax):
 
     ax.contour(X, Y, Z, levels=50, cmap='viridis')
     ax.title.set_text("2D Contour Plot of Objective Function")
+
+    xs = data[:,:,0]
+    ys = data[:,:,1]
 
 def surface_plot(data, function, ax):
     x = np.arange(np.min(bounds), np.max(bounds), 0.05)
@@ -77,5 +80,5 @@ def cost_plot(data, function, ax):
 
 if __name__ == "__main__":
     #plot_all([],[],"rastrigin")
-    pso.pso()
-    plot_all([], [], "rosenbrock")
+    data=pso.pso()
+    plot_all(np.asarray(data), [], "rosenbrock")

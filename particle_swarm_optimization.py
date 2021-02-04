@@ -10,7 +10,7 @@ def pso(population=20, iterations=50, a=0.9, b=2.0, c=2.0, optimize_a=True,funct
     pos_best_cost = []
     x0 = np.random.rand(population, 2)
     swarm = [Particle(i,x0[i,:],population=population,neighbourhood=neighbourhood) for i in range(population)]
-    position_matrix = [[0 for x in range(population)] for y in range(iterations)]
+    position_matrix = [[[0,0] for _ in range(population)] for _ in range(iterations)]
 
     i = 0
     while i < iterations:
@@ -27,7 +27,8 @@ def pso(population=20, iterations=50, a=0.9, b=2.0, c=2.0, optimize_a=True,funct
             else:
                 swarm[j].update_velocity(a, b, c, pos_best_cost,swarm)
             swarm[j].update_position()
-            position_matrix[i][j] = swarm[j].position
+            position_matrix[i][j][0] = swarm[j].position[0]
+            position_matrix[i][j][1] = swarm[j].position[1]
         i+=1
 
     return position_matrix
