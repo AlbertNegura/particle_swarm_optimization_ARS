@@ -79,9 +79,9 @@ class Particle:
                     self.velocity[i] = -1
 
         elif len(self.neighbourhood) == 3: # social-two
-            best_neighbours = swarm[self.neighbourhood]
-            best_neighbours = [best_neighbours[0],best_neighbours[2]]
-            pos_best_cost = swarm[np.argmin(best_neighbours[0].cost,best_neighbours[1].cost)].position
+            swarm = np.asarray(swarm)
+            best_neighbours = [swarm[self.neighbourhood[0]],swarm[self.neighbourhood[2]]]
+            pos_best_cost = swarm[np.argmin([best_neighbours[0].cost,best_neighbours[1].cost])].position
             for i in range(2):
                 self.velocity[i] = a*self.velocity[i] + b*r1*(self.best_minimum_position[i]-self.position[i]) + c*r2*(pos_best_cost[i]-self.position[i])
                 # if v(t+1) is larger, clip it to vmax
@@ -91,9 +91,9 @@ class Particle:
                     self.velocity[i] = -1
 
         elif len(self.neighbourhood) == 5: # social-four
-            best_neighbours = swarm[self.neighbourhood]
-            best_neighbours = [best_neighbours[0],best_neighbours[1],best_neighbours[3],best_neighbours[4]]
-            pos_best_cost = swarm[np.argmin(best_neighbours[0].cost,best_neighbours[1].cost,best_neighbours[3].cost,best_neighbours[4].cost)].position
+            swarm = np.asarray(swarm)
+            best_neighbours = [swarm[self.neighbourhood[0]],swarm[self.neighbourhood[1]],swarm[self.neighbourhood[3]],swarm[self.neighbourhood[4]]]
+            pos_best_cost = swarm[np.argmin([best_neighbours[0].cost,best_neighbours[1].cost,best_neighbours[2].cost,best_neighbours[3].cost])].position
             for i in range(2):
                 self.velocity[i] = a*self.velocity[i] + b*r1*(self.best_minimum_position[i]-self.position[i]) + c*r2*(pos_best_cost[i]-self.position[i])
                 # if v(t+1) is larger, clip it to vmax
