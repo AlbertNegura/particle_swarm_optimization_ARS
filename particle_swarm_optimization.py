@@ -17,7 +17,7 @@ def pso(population=20, iterations=50, a=0.9, b=2.0, c=2.0, optimize_a=True,funct
     x0 = np.random.uniform(low=bounds[0], high=bounds[1], size=(population,2))
 
     swarm = [Particle(i,x0[i,:],population=population,neighbourhood=neighbourhood) for i in range(population)]
-    position_matrix = [[[0,0] for _ in range(population)] for _ in range(iterations)]
+    position_matrix = [[[0,0, np.inf] for _ in range(population)] for _ in range(iterations)]
 
     i = 0
     while i < iterations:
@@ -36,6 +36,7 @@ def pso(population=20, iterations=50, a=0.9, b=2.0, c=2.0, optimize_a=True,funct
             swarm[j].update_position()
             position_matrix[i][j][0] = swarm[j].position[0]
             position_matrix[i][j][1] = swarm[j].position[1]
+            position_matrix[i][j][2] = swarm[j].cost
         i+=1
 
     return position_matrix

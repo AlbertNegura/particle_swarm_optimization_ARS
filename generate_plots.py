@@ -62,15 +62,15 @@ def contour_plot(data, function, ax):
                                             interval=50, blit=False, repeat=True)
 
 def animate_contour(i, data,scatters, lines):
-    plot_data = data[i,:,:]
-    print(plot_data)
+    plot_data = data[i,:,:2]
     scatters.set_offsets(plot_data)
     if i > 5:
         for lnum, line in enumerate(lines):
-            xs = data[i - 5:i, lnum, :]
+            xs = data[i - 5:i, lnum, :2]
             line[0].set_data(xs[:, 0], xs[:, 1])
 
 def surface_plot(data, function, ax):
+    global fig, scatters, ani2
     x = np.arange(np.min(bounds), np.max(bounds), 0.05)
     y = np.arange(np.min(bounds), np.max(bounds), 0.05)
 
@@ -81,6 +81,26 @@ def surface_plot(data, function, ax):
     ax.plot_surface(X, Y, Z, cmap=cm.nipy_spectral, alpha=0.6)
     #ax.contour3D(X, Y, Z, 50, cmap='gray', linestyles="solid")
     ax.title.set_text("3D Plot of Objective Function")
+
+    xs = data[:, :, 0]
+    ys = data[:, :, 1]
+    zzs = data[:, :, 2]
+    scatters = ax.scatter(xs[0], ys[0], zzs[0], c="red", marker="o", vmin=0, vmax=data.shape[1])
+    lines = []
+    for i in range(data.shape[1]):
+        line = ax.plot(xs[0, i], ys[0, i], zzs[0, i], c="red", alpha=0.3)
+        lines.append(line)
+    ani2 = animation.FuncAnimation(fig, animate_surface, frames=50, fargs=[data,scatters, lines],
+                                            interval=50, blit=False, repeat=True)
+
+# Don't mind this too much, I was trying stuff out
+def animate_surface(i, data, scatters, lines):
+    plot_data = data[i,:,:]
+    scatters.set_offsets(plot_data)
+    if i > 5:
+        for lnum, line in enumerate(lines):
+            xs = data[i - 5:i, lnum, :]
+            line[0].set_data(xs[:, 0], xs[:, 1])
 
 def cost_plot(data, function, ax):
     ax.set(xlim=bounds, ylim=bounds)
