@@ -1,5 +1,4 @@
 import numpy as np
-import math
 from particle import Particle
 
 def pso(population=20, iterations=50, a=0.9, b=2.0, c=2.0, optimize_a=True,function="rosenbrock", neighbourhood="global"):

@@ -1,5 +1,3 @@
-from matplotlib.ticker import LinearLocator, FormatStrFormatter
-
 import particle_swarm_optimization as pso
 import particle
 import numpy as np
