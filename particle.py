@@ -6,15 +6,36 @@ class Particle:
     position = []
     velocity = []
     best_minimum_position = []
+    neighbourhood = []
     best_minimum_cost = None
     cost = None
     bounds = None
 
-    def __init__(self, position, bounds=[-1,1]):
+    def __init__(self, id, position, bounds=[-1,1], neighbourhood = "all", population = 0):
         self.position = position.copy()
         self.velocity = [random.uniform(bounds[0],bounds[1]),random.uniform(bounds[0],bounds[1])]
         self.best_minimum_position = position.copy()
         self.bounds = bounds
+        if neighbourhood == "all":
+            self.neighbourhood = [id]
+        if neighbourhood == "social_two": # 2 direct neighbours
+            self.neighbourhood = [id-1,id,id+1]
+            if id == 0:
+                self.neighbourhood[0] = population-1
+            if id == population-1:
+                self.neighbourhood[2] = 0
+        if neighbourhood == "social_four": # 4 direct neighbours
+            self.neighbourhood = [id-2,id-1,id,id+1,id+2]
+            if id == 0:
+                self.neighbourhood[0] = population-2
+                self.neighbourhood[1] = population-1
+            if id == 1:
+                self.neighbourhood[0] = population-1
+            if id == population-1:
+                self.neighbourhood[3] = 0
+                self.neighbourhood[4] = 1
+            if id == population-2:
+                self.neighbourhood[4] = 0
 
     def evaluate(self, function):
         b = 1
