@@ -79,4 +79,5 @@ def cost_plot(data, function, ax):
 
 if __name__ == "__main__":
     #plot_all([],[],"rastrigin")
+    pso.pso()
     plot_all([], [], "rosenbrock")
