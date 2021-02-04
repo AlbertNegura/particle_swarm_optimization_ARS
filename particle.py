@@ -18,6 +18,8 @@ class Particle:
         self.bounds = bounds
         if neighbourhood == "all":
             self.neighbourhood = [id]
+        if neighbourhood == "geographical":
+            self.neighbourhood = [id,id]
         if neighbourhood == "social_two": # 2 direct neighbours
             self.neighbourhood = [id-1,id,id+1]
             if id == 0:
@@ -53,17 +55,45 @@ class Particle:
             self.cost = b*(y - x ** 2) ** 2 + (a-x) ** 2
             self.bounds = [-2.4, 2.4]
 
-    def update_velocity(self, a, b, c, pos_best_cost):
+    def update_velocity(self, a, b, c, pos_best_cost, swarm):
         r1 = random.random()
         r2 = random.random()
-        
-        for i in range(2):
-            self.velocity[i] = a*self.velocity[i] + b*r1*(self.best_minimum_position[i]-self.position[i]) + c*r2*(pos_best_cost[i]-self.position[i])
-            # if v(t+1) is larger, clip it to vmax
-            if self.velocity[i] > 1:
-                self.velocity[i] = 1
-            elif self.velocity[i] < -1:
-                self.velocity[i] = -1
+        if len(self.neighbourhood) == 1: # global
+            for i in range(2):
+                self.velocity[i] = a*self.velocity[i] + b*r1*(self.best_minimum_position[i]-self.position[i]) + c*r2*(pos_best_cost[i]-self.position[i])
+                # if v(t+1) is larger, clip it to vmax
+                if self.velocity[i] > 1:
+                    self.velocity[i] = 1
+                elif self.velocity[i] < -1:
+                    self.velocity[i] = -1
+
+        elif len(self.neighbourhood) == 2: # geographical
+            for i in range(2):
+                self.velocity[i] = a*self.velocity[i] + b*r1*(self.best_minimum_position[i]-self.position[i]) + c*r2*(pos_best_cost[i]-self.position[i])
+                # if v(t+1) is larger, clip it to vmax
+                if self.velocity[i] > 1:
+                    self.velocity[i] = 1
+                elif self.velocity[i] < -1:
+                    self.velocity[i] = -1
+
+        elif len(self.neighbourhood) == 3: # social-two
+            for i in range(2):
+                self.velocity[i] = a*self.velocity[i] + b*r1*(self.best_minimum_position[i]-self.position[i]) + c*r2*(pos_best_cost[i]-self.position[i])
+                # if v(t+1) is larger, clip it to vmax
+                if self.velocity[i] > 1:
+                    self.velocity[i] = 1
+                elif self.velocity[i] < -1:
+                    self.velocity[i] = -1
+
+        elif len(self.neighbourhood) == 5: # social-four
+            for i in range(2):
+                self.velocity[i] = a*self.velocity[i] + b*r1*(self.best_minimum_position[i]-self.position[i]) + c*r2*(pos_best_cost[i]-self.position[i])
+                # if v(t+1) is larger, clip it to vmax
+                if self.velocity[i] > 1:
+                    self.velocity[i] = 1
+                elif self.velocity[i] < -1:
+                    self.velocity[i] = -1
+
 
     def update_position(self):
         for i in range(2):
