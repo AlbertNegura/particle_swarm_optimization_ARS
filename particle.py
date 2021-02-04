@@ -71,8 +71,9 @@ class Particle:
             swarm = np.asarray(swarm)
             best_neighbours = np.asarray([swarm[i].position-self.position for i in range(swarm.size)])
             best_neighbours = [best_neighbours[i].dot(best_neighbours[i]) for i in range(swarm.size)]
-            best_neighbour = np.argsort(best_neighbours)[1]
-            pos_best_cost = swarm[best_neighbour].position
+            best_neighbour = np.argsort(best_neighbours)
+            best_neighbour = [swarm[best_neighbour[1]],swarm[best_neighbour[2]]]
+            pos_best_cost = swarm[np.argmin([best_neighbour[0].cost,best_neighbour[1].cost])].position
             for i in range(2):
                 self.velocity[i] = a*self.velocity[i] + b*r1*(self.best_minimum_position[i]-self.position[i]) + c*r2*(pos_best_cost[i]-self.position[i])
                 # if v(t+1) is larger, clip it to vmax
