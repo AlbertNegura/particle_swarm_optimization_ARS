@@ -20,13 +20,13 @@ class Particle:
             self.neighbourhood = [id]
         if neighbourhood == "geographical":
             self.neighbourhood = [id,id]
-        if neighbourhood == "social_two": # 2 direct neighbours
+        if neighbourhood == "social-two": # 2 direct neighbours
             self.neighbourhood = [id-1,id,id+1]
             if id == 0:
                 self.neighbourhood[0] = population-1
             if id == population-1:
                 self.neighbourhood[2] = 0
-        if neighbourhood == "social_four": # 4 direct neighbours
+        if neighbourhood == "social-four": # 4 direct neighbours
             self.neighbourhood = [id-2,id-1,id,id+1,id+2]
             if id == 0:
                 self.neighbourhood[0] = population-2
