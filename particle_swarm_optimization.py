@@ -22,7 +22,7 @@ def pso():
     best_cost = np.inf
     pos_best_cost = []
     x0 = np.random.rand(population, 2)
-    swarm = [Particle(i,x0[i,:],population=population,neighbourhood="social-four") for i in range(population)]
+    swarm = [Particle(i,x0[i,:],population=population,neighbourhood="geographical") for i in range(population)]
     position_matrix = [[0 for x in range(population)] for y in range(iterations)]
 
     i = 0
