@@ -8,16 +8,15 @@ import matplotlib.colors as colors
 import matplotlib.animation as animation
 from matplotlib import cm
 
-
 matplotlib.use("TkAgg")
 
 cost = []
 bounds = []
+fig = plt.figure()
 
 def plot_all(positions, cost, function):
-    global bounds
+    global bounds, fig
     bounds = [-2.4, 2.4] if function == "rosenbrock" else [-5.12, 5.12]
-    fig = plt.figure()
     fig.set_figheight(15)
     fig.set_figwidth(15)
     ax1 = fig.add_subplot(221)
@@ -41,8 +40,9 @@ def function_of(x, y, function):
 
 
 def contour_plot(data, function, ax):
-    x = np.arange(np.min(bounds), np.max(bounds), 0.05)
-    y = np.arange(np.min(bounds), np.max(bounds), 0.05)
+    global fig, scatters, ani
+    x = np.arange(np.min(bounds), np.max(bounds)+0.05, 0.05)
+    y = np.arange(np.min(bounds), np.max(bounds)+0.05, 0.05)
 
     X, Y = np.meshgrid(x, y)
     zs = np.array(function_of(np.ravel(X), np.ravel(Y), function))
@@ -53,6 +53,22 @@ def contour_plot(data, function, ax):
 
     xs = data[:,:,0]
     ys = data[:,:,1]
+    scatters = ax.scatter(xs[0], ys[0], c="red", marker="o", vmin=0,vmax=data.shape[1])
+    lines = []
+    for i in range(data.shape[1]):
+        line = ax.plot(xs[0, i], ys[0, i], c="red", alpha=0.3)
+        lines.append(line)
+    ani = animation.FuncAnimation(fig, animate_contour, frames=50, fargs=[data,scatters, lines],
+                                            interval=50, blit=False, repeat=True)
+
+def animate_contour(i, data,scatters, lines):
+    plot_data = data[i,:,:]
+    print(plot_data)
+    scatters.set_offsets(plot_data)
+    if i > 5:
+        for lnum, line in enumerate(lines):
+            xs = data[i - 5:i, lnum, :]
+            line[0].set_data(xs[:, 0], xs[:, 1])
 
 def surface_plot(data, function, ax):
     x = np.arange(np.min(bounds), np.max(bounds), 0.05)
