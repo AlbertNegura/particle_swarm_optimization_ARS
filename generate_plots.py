@@ -100,12 +100,7 @@ def animate_surface(i, data, z_data, scatters, lines):
             line[0].set_data(xs[:, 0], xs[:, 1])
 
 def cost_plot(data, function, ax):
-    ax.set(xlim=bounds, ylim=bounds)
-    ax.tick_params(axis='x', labelbottom=False)
-    ax.tick_params(axis='y', labelleft=False)
-    #indices = np.linspace(0, data.len(), self.stop - 1)
-    # ax.xlabel.set_text('Iterations')
-    # ax.ylabel.set_text('Cost')
+    ax.set(xlim=[0,data.shape[0]], ylim=[np.argmin(data),np.argmax(data)],xlabel='Iterations',ylabel='Cost')
     ax.title.set_text('Min Cost Function')
     ax.plot(data, lw=3)
 
@@ -113,5 +108,5 @@ def cost_plot(data, function, ax):
 
 if __name__ == "__main__":
     #plot_all([],[],"rastrigin")
-    data=pso.pso(function="rosenbrock", optimize_a=False)
-    plot_all(np.asarray(data), [], "rosenbrock")
+    data,cost=pso.pso(function="rosenbrock", optimize_a=False)
+    plot_all(np.asarray(data), cost, "rosenbrock")
