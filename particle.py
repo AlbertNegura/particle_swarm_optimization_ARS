@@ -39,12 +39,7 @@ class Particle:
             if id == population-2:
                 self.neighbourhood[4] = 0
 
-    def evaluate(self, function):
-        b = 1
-        a = 0
-        A = 10
-        dimensions = 2
-
+    def evaluate(self, function, b=1, a=0, A=10, dimensions=2):
         x = self.position[0]
         y = self.position[1]
 
