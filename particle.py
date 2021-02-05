@@ -11,12 +11,12 @@ class Particle:
     cost = None
     bounds = None
 
-    def __init__(self, id, position, bounds=[-1,1], neighbourhood = "all", population = 0):
+    def __init__(self, id, position, bounds=[-1,1], neighbourhood = "global", population = 0):
         self.position = position.copy()
         self.velocity = [random.uniform(bounds[0],bounds[1]),random.uniform(bounds[0],bounds[1])]
         self.best_minimum_position = position.copy()
         self.bounds = bounds
-        if neighbourhood == "all":
+        if neighbourhood == "global":
             self.neighbourhood = [id]
         if neighbourhood == "geographical":
             self.neighbourhood = [id,id]
