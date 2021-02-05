@@ -36,7 +36,6 @@ def pso(population=20, iterations=50, a=0.9, b=2.0, c=2.0, optimize_a=True,funct
             swarm[j].update_position()
             position_matrix[i][j][0] = swarm[j].position[0]
             position_matrix[i][j][1] = swarm[j].position[1]
-            position_matrix[i][j][2] = swarm[j].cost
         i+=1
 
     return position_matrix
