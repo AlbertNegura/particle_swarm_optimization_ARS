@@ -30,9 +30,9 @@ def pso(population=20, iterations=50, a=0.9, b=2.0, c=2.0, optimize_a=True,funct
 
         for j in range(population):
             if optimize_a:
-                swarm[j].update_velocity(a_range[j], b, c, pos_best_cost,swarm)
+                swarm[j].update_velocity(a_range[j], b, c, pos_best_cost, swarm)
             else:
-                swarm[j].update_velocity(a, b, c, pos_best_cost,swarm)
+                swarm[j].update_velocity(a, b, c, pos_best_cost, swarm)
             swarm[j].update_position()
             position_matrix[i][j][0] = swarm[j].position[0]
             position_matrix[i][j][1] = swarm[j].position[1]

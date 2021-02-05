@@ -27,12 +27,7 @@ def plot_all(positions, cost, function):
     cost_plot(cost, function, ax3)
     plt.show()
 
-def function_of(x, y, function):
-    b = 1
-    a = 0
-    A = 10
-    dimensions = 2
-
+def function_of(x, y, function, a=0, b=1, A=10, dimensions=2):
     if function == "rastrigin":  # rastrigin
         return A * dimensions + (x ** 2 - A * np.cos(math.pi * 2 * x)) + (y ** 2 - A * np.cos(math.pi * 2 * y))
     elif function == "rosenbrock":  # rosenbrock a=0,b=1
@@ -84,19 +79,21 @@ def surface_plot(data, function, ax):
 
     xs = data[:, :, 0]
     ys = data[:, :, 1]
-    zzs = data[:, :, 2]
+    zzs = function_of(xs,ys,function)
     scatters = ax.scatter(xs[0], ys[0], zzs[0], c="red", marker="o", vmin=0, vmax=data.shape[1])
     lines = []
     for i in range(data.shape[1]):
         line = ax.plot(xs[0, i], ys[0, i], zzs[0, i], c="red", alpha=0.3)
         lines.append(line)
-    ani2 = animation.FuncAnimation(fig, animate_surface, frames=50, fargs=[data,scatters, lines],
+    ani2 = animation.FuncAnimation(fig, animate_surface, frames=50, fargs=[data,zzs,scatters, lines],
                                             interval=50, blit=False, repeat=True)
 
 # Don't mind this too much, I was trying stuff out
-def animate_surface(i, data, scatters, lines):
-    plot_data = data[i,:,:]
-    scatters.set_offsets(plot_data)
+def animate_surface(i, data, z_data, scatters, lines):
+    plot_data_x = data[i,:,0]
+    plot_data_y = data[i,:,1]
+    plot_data_z = z_data[i]
+    scatters._offsets3d=(plot_data_x,plot_data_y,plot_data_z)
     if i > 5:
         for lnum, line in enumerate(lines):
             xs = data[i - 5:i, lnum, :]
@@ -116,5 +113,5 @@ def cost_plot(data, function, ax):
 
 if __name__ == "__main__":
     #plot_all([],[],"rastrigin")
-    data=pso.pso()
+    data=pso.pso(function="rosenbrock", optimize_a=False)
     plot_all(np.asarray(data), [], "rosenbrock")
