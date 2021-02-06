@@ -30,7 +30,7 @@ def gradient_descent(function = "rosenbrock", iterations = 50):
         print("x {}, y {}, cost {}, iteration {}".format(position[0],position[1],cost,i))   
 
 
-    plots.plot_all(np.asarray(data),cost_function,function)
+    return data,cost_function
 
 def evaluate(function, position):
         b = 1
@@ -47,11 +47,6 @@ def evaluate(function, position):
             return b*(y - x ** 2) ** 2 + (a-x) ** 2
 
 def step(function, position,learning_rate):
-        #b = 1
-        #a = 0
-        #A = 10
-        #dimensions = 2
-
         x = position[0]
         y = position[1]
 

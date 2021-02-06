@@ -1,4 +1,5 @@
 import particle_swarm_optimization as pso
+import gradient_descent as gd
 import numpy as np
 import math
 import matplotlib
@@ -250,5 +251,8 @@ def cost_plot(data, function, ax):
 #ani3 = animation.FuncAnimation(fig, animate3, frames=iterations, fargs=[],interval=100, blit=False, repeat=True)
 
 if __name__ == "__main__":
-    data,cost=pso.pso(function="rosenbrock", optimize_a=True, a=0.9, b=2.0, c=2.0)
-    gui(np.asarray(data), cost, "rosenbrock")
+    function="rosenbrock" 
+    data,cost=pso.pso(function = function, optimize_a=True, a=0.9, b=2.0, c=2.0)
+    data2,cost2=gd.gradient_descent(function=function)
+    #gui(np.asarray(data), cost, function)
+    gui(np.asarray(data2), cost2, function)
