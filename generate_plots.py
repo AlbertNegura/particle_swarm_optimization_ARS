@@ -1,5 +1,4 @@
 import particle_swarm_optimization as pso
-import particle
 import numpy as np
 import math
 import matplotlib
@@ -51,7 +50,7 @@ def contour_plot(data, function, ax):
     scatters = ax.scatter(xs[0], ys[0], c="red", marker="o", vmin=0,vmax=data.shape[1],edgecolors="Black")
     lines = []
     for i in range(data.shape[1]):
-        line = ax.plot(xs[0, i], ys[0, i], c="red", alpha=0.3)
+        line = ax.plot(xs[0, i], ys[0, i], c="Black", alpha=0.3)
         lines.append(line)
     ani = animation.FuncAnimation(fig, animate_contour, frames=50, fargs=[data,scatters, lines],
                                             interval=100, blit=False, repeat=True)
@@ -101,7 +100,7 @@ def animate_surface(i, data, z_data, scatters, lines):
 
 def cost_plot(data, function, ax):
     ax.set(xlim=[0,data.shape[0]],xlabel='Iterations',ylabel='Best Cost')
-    #ylim=[np.argmin(data),np.argmax(data)]
+    ax.set(ylim=[np.min(data),np.max(data)])
     ax.title.set_text('Min Cost Function')
     ax.plot(data, lw=3)
 
