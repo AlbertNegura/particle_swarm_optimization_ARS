@@ -2,7 +2,7 @@ import numpy as np
 from particle import Particle
 
 
-def pso(population=20, iterations=50, a=0.9, b=2.0, c=2.0, optimize_a=True, function="rosenbrock", bounds=[-5.12, 5.12],
+def pso(population=20, iterations=1000, a=0.5, b=0.5, c=0.5, optimize_a=True, function="rosenbrock", bounds=[-5.12, 5.12],
         neighbourhood="global"):
     if optimize_a:
         a_range = np.linspace(a, 0.4, iterations)
@@ -12,22 +12,23 @@ def pso(population=20, iterations=50, a=0.9, b=2.0, c=2.0, optimize_a=True, func
     pos_best_cost = []
     cost_function = np.zeros(iterations)
 
+    print(a_range)
     if function == "rastrigin":  # rastrigin
         bounds = [-5.12, 5.12]
     elif function == "rosenbrock":  # rosenbrock a=0,b=1
         bounds = [-2.4, 2.4]
 
     x0 = np.min(bounds) + np.random.rand(population, 2) * (np.max(bounds) - np.min(bounds))
-
     swarm = [Particle(i, x0[i, :], population=population, neighbourhood=neighbourhood, bounds=bounds) for i in
              range(population)]
-    position_matrix = [[[0, 0, np.inf] for _ in range(population)] for _ in range(iterations)]
+    position_matrix = [[[x0[i][0], x0[i][1]] for i in range(population)] for _ in range(iterations)]
+
+
 
     i = 0
     while i < iterations:
         for j in range(population):
             swarm[j].evaluate(function=function)
-
             if swarm[j].best_minimum_cost < best_cost:
                 pos_best_cost = swarm[j].best_minimum_position
                 best_cost = swarm[j].best_minimum_cost

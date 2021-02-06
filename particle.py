@@ -9,10 +9,12 @@ class Particle:
     best_minimum_cost = np.inf
     cost = np.inf
     bounds = None
+    id = None
 
     def __init__(self, id, position, bounds=None, neighbourhood ="global", population = 0):
         if bounds is None:
             bounds = [-1, 1]
+        self.id = id
         self.bounds = bounds
         self.position = position.copy()
         self.upper_bound_vel = np.abs(np.max(self.bounds)-np.min(self.bounds))
