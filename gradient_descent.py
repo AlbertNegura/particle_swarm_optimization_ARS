@@ -1,12 +1,36 @@
 import numpy as np
 import random
 import math
+import generate_plots as plots
 
-function = "rastrigin" 
-bounds = [-2.4, 2.4] if function == "rosenbrock" else [-5.12, 5.12]
-position = [random.uniform(bounds[0],bounds[1]),random.uniform(bounds[0],bounds[1])]
-learning_rate = 0.01
-iterations = 50
+def gradient_descent(function = "rosenbrock", iterations = 50):
+    
+    # rastrigin does not converge with LR bigger than 0.005, yet it cannot find the global minimum but a local minimum
+    learning_rate = 0.1 if function == "rosenbrock" else 0.005
+    bounds = [-2.4, 2.4] if function == "rosenbrock" else [-5.12, 5.12]
+
+    x0 = np.min(bounds) + np.random.rand(1, 2) * (np.max(bounds) - np.min(bounds))
+
+    position = x0[0, :]
+    data = [[[0, 0, np.inf] for _ in range(1)] for _ in range(iterations)]
+    cost_function = np.zeros(iterations)
+    for i in range(iterations):
+        cost = evaluate(function,position)
+        position = step(function,position,learning_rate)
+
+        for j in range(2):
+            if position[j] > np.max(bounds):
+                position[j] = np.max(bounds)
+            if position[j] < np.min(bounds):
+                position[j] = np.min(bounds)
+
+        data[i][0][0] = position[0]
+        data[i][0][1] = position[1]
+        cost_function[i] = cost
+        print("x {}, y {}, cost {}, iteration {}".format(position[0],position[1],cost,i))   
+
+
+    plots.plot_all(np.asarray(data),cost_function,function)
 
 def evaluate(function, position):
         b = 1
@@ -22,7 +46,7 @@ def evaluate(function, position):
         elif function == "rosenbrock":  # rosenbrock a=0,b=1
             return b*(y - x ** 2) ** 2 + (a-x) ** 2
 
-def step(function, position):
+def step(function, position,learning_rate):
         #b = 1
         #a = 0
         #A = 10
@@ -43,12 +67,5 @@ def step(function, position):
         y_next = y - learning_rate*dy 
         return [x_next,y_next]
 
-data = [0 for x in range(iterations)]
-cost = evaluate(function,position)
-for i in range(iterations):
-    data[i] = [position,cost]
-    cost = evaluate(function,position)
-    print("x {}, y {}, cost {}, iteration {}".format(position[0],position[1],cost,i))
 
-    position = step(function,position)
-        
+gradient_descent()        
