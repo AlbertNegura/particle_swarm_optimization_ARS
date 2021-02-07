@@ -10,20 +10,22 @@ from matplotlib import style, cm
 
 import tkinter as tk
 from tkinter import *
+from tkinter import ttk
 
 import numpy as np
 import particle_swarm_optimization
 import gradient_descent
 
 LARGE_FONT= ("Verdana", 12)
-style.use("ggplot")
+style.use("seaborn-muted")
 ani1 = None
+s=ttk.Style()
+s.theme_use('clam')
 
 class PSO(tk.Tk):
     frames = {}
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
-
         tk.Tk.wm_title(self, "Particle Swarm Optimization")
 
         container = tk.Frame(self)
@@ -55,10 +57,10 @@ class StartPage(tk.Frame):
     omega = 0.9
     def __init__(self, parent, controller):
         tk.Frame.__init__(self,parent)
-        label1 = tk.Label(self, text=("""Particle Swarm Optimization Visualization\nAuthors: Julien Havel, Albert Negura, Sergi Nogues"""), font=LARGE_FONT)
+        label1 = ttk.Label(self, text=("""Particle Swarm Optimization Visualization\nAuthors: Julien Havel, Albert Negura, Sergi Nogues"""), font=LARGE_FONT)
         label1.pack(pady=10,padx=10)
 
-        self.omega_slider = tk.Scale(self, from_=0.00, to=1.00, length=600,tickinterval=10, digits=3, resolution=0.01, orient=HORIZONTAL, label="Omega")
+        self.omega_slider = ttk.Scale(self, from_=0.00, to=1.00, length=600,tickinterval=10, digits=3, resolution=0.01, orient=HORIZONTAL, label="Omega")
         self.omega_slider.pack()
         self.social_slider = tk.Scale(self, from_=0.00, to=10.00, length=600,tickinterval=10, digits=4, resolution=0.01, orient=HORIZONTAL, label="Social Constant")
         self.social_slider.pack()
@@ -70,47 +72,47 @@ class StartPage(tk.Frame):
         self.iterations_slider.pack()
 
 
-        label2 = tk.Label(self, text=("""Select function to minimize."""), font=LARGE_FONT)
+        label2 = ttk.Label(self, text=("""Select function to minimize."""), font=LARGE_FONT)
         label2.pack(pady=10,padx=10)
         self.function = "rosenbrock"
         self.func_var = IntVar(self)
-        self.function_radio1 = tk.Radiobutton(self, text="Rosenbrock (DEFAULT)", variable=self.func_var, value=0, command=self.set_func)
+        self.function_radio1 = ttk.Radiobutton(self, text="Rosenbrock (DEFAULT)", variable=self.func_var, value=0, command=self.set_func)
         self.function_radio1.pack()
-        self.function_radio2 = tk.Radiobutton(self, text="Rastrigin", variable=self.func_var, value=1, command=self.set_func)
+        self.function_radio2 = ttk.Radiobutton(self, text="Rastrigin", variable=self.func_var, value=1, command=self.set_func)
         self.function_radio2.pack()
 
 
-        label3 = tk.Label(self, text=("""Select algorithm (note that gradient descent is independent of sliders and neighbourhood selection)."""), font=LARGE_FONT)
+        label3 = ttk.Label(self, text=("""Select algorithm (note that gradient descent is independent of sliders and neighbourhood selection)."""), font=LARGE_FONT)
         label3.pack(pady=10,padx=10)
         self.algorithm = "pso"
         self.alg_var = IntVar(self)
-        self.algorithm_radio1 = tk.Radiobutton(self, text="Particle Swarm Optimization (DEFAULT)", variable=self.alg_var, value=0, command=self.set_algo)
+        self.algorithm_radio1 = ttk.Radiobutton(self, text="Particle Swarm Optimization (DEFAULT)", variable=self.alg_var, value=0, command=self.set_algo)
         self.algorithm_radio1.pack()
-        self.algorithm_radio2 = tk.Radiobutton(self, text="Gradient Descent (note that sliders don't do anything)", variable=self.alg_var, value=1, command=self.set_algo)
+        self.algorithm_radio2 = ttk.Radiobutton(self, text="Gradient Descent (note that sliders don't do anything)", variable=self.alg_var, value=1, command=self.set_algo)
         self.algorithm_radio2.pack()
 
-        label4 = tk.Label(self, text=("""Select neighbourhood behaviour for PSO."""), font=LARGE_FONT)
+        label4 = ttk.Label(self, text=("""Select neighbourhood behaviour for PSO."""), font=LARGE_FONT)
         label4.pack(pady=10,padx=10)
         self.neighbourhood = "global"
         self.neigh_var = IntVar(self)
-        self.neighbourhood_radio1 = tk.Radiobutton(self, text="Global Neighbourhood (DEFAULT)", variable=self.neigh_var, value=0, command=self.set_neighbourhood)
+        self.neighbourhood_radio1 = ttk.Radiobutton(self, text="Global Neighbourhood (DEFAULT)", variable=self.neigh_var, value=0, command=self.set_neighbourhood)
         self.neighbourhood_radio1.pack()
-        self.neighbourhood_radio2 = tk.Radiobutton(self, text="Social Neighbourhood with 2 Neighbours", variable=self.neigh_var, value=1, command=self.set_neighbourhood)
+        self.neighbourhood_radio2 = ttk.Radiobutton(self, text="Social Neighbourhood with 2 Neighbours", variable=self.neigh_var, value=1, command=self.set_neighbourhood)
         self.neighbourhood_radio2.pack()
-        self.neighbourhood_radio3 = tk.Radiobutton(self, text="Social Neighbourhood with 4 Neighbours", variable=self.neigh_var, value=2, command=self.set_neighbourhood)
+        self.neighbourhood_radio3 = ttk.Radiobutton(self, text="Social Neighbourhood with 4 Neighbours", variable=self.neigh_var, value=2, command=self.set_neighbourhood)
         self.neighbourhood_radio3.pack()
-        self.neighbourhood_radio4 = tk.Radiobutton(self, text="Geographical Neighbourhood with 2 Nearest Neighbours", variable=self.neigh_var, value=3, command=self.set_neighbourhood)
+        self.neighbourhood_radio4 = ttk.Radiobutton(self, text="Geographical Neighbourhood with 2 Nearest Neighbours", variable=self.neigh_var, value=3, command=self.set_neighbourhood)
         self.neighbourhood_radio4.pack()
 
-        button1 = Button(self, text="Visualize",
+        button1 = ttk.Button(self, text="Visualize",
                             command=lambda: self.showFrame(parent=parent,controller=controller))
         button1.pack()
 
-        button2 = Button(self, text="Reset to Default Values",
+        button2 = ttk.Button(self, text="Reset to Default Values",
                             command=lambda: self.set_default)
         button2.pack()
 
-        button3 = Button(self, text="Exit",
+        button3 = ttk.Button(self, text="Exit",
                             command=quit)
         button3.pack()
 
