@@ -244,6 +244,12 @@ class VisualizationPage(tk.Frame):
         self.ax3.title.set_text('Min Cost Function')
         self.ax3.plot(data, lw=3)
 
+    def av_cost_plot(self,data):
+        self.ax4.set(xlim=[0, data.shape[0]], xlabel='Iterations', ylabel='Best Cost')
+        self.ax4.set(ylim=[np.min(data), np.max(data)])
+        self.ax4.title.set_text('Average Cost Function')
+        self.ax4.plot(data, lw=3)
+
     def execute(self):
         global ani1, ani2
         self.ax1.cla()
@@ -256,12 +262,13 @@ class VisualizationPage(tk.Frame):
         self.population = PSO.frames[StartPage].population
         self.iterations = PSO.frames[StartPage].iterations
         self.bounds = [-2.4, 2.4] if self.function == "rosenbrock" else [-5.12, 5.12]
-        data, cost = particle_swarm_optimization.pso(population=PSO.frames[StartPage].population, iterations=PSO.frames[StartPage].iterations, function=self.function, optimize_a=False, a=PSO.frames[StartPage].omega, b=PSO.frames[StartPage].social, c=PSO.frames[StartPage].cognitive)
+        data, cost, av_cost = particle_swarm_optimization.pso(population=PSO.frames[StartPage].population, iterations=PSO.frames[StartPage].iterations, function=self.function, optimize_a=False, a=PSO.frames[StartPage].omega, b=PSO.frames[StartPage].social, c=PSO.frames[StartPage].cognitive)
         data = np.array(data)
         if PSO.frames[StartPage].algorithm == "pso":
             cont_data, cont_scatters, cont_lines = self.contour_plot(data)
             surf_data, surf_zs, surf_scatters, surf_lines = self.surface_plot(data)
             self.cost_plot(cost)
+            self.av_cost_plot(cost)
         elif PSO.frames[StartPage].algorithm == "gd":
             pass
 

@@ -11,6 +11,7 @@ def pso(population=20, iterations=1000, a=0.5, b=0.5, c=0.5, optimize_a=True, fu
     best_cost = np.inf
     pos_best_cost = []
     cost_function = np.zeros(iterations)
+    av_cost_function = np.zeros(iterations)
 
     if function == "rastrigin":  # rastrigin
         bounds = [-5.12, 5.12]
@@ -26,11 +27,13 @@ def pso(population=20, iterations=1000, a=0.5, b=0.5, c=0.5, optimize_a=True, fu
 
     i = 0
     while i < iterations:
+        cost_sum=0
         for j in range(population):
             swarm[j].evaluate(function=function)
             if swarm[j].best_minimum_cost < best_cost:
                 pos_best_cost = swarm[j].best_minimum_position
                 best_cost = swarm[j].best_minimum_cost
+            cost_sum += swarm[j].cost
 
         for j in range(population):
             if optimize_a:
@@ -41,9 +44,10 @@ def pso(population=20, iterations=1000, a=0.5, b=0.5, c=0.5, optimize_a=True, fu
             position_matrix[i][j][0] = swarm[j].position[0]
             position_matrix[i][j][1] = swarm[j].position[1]
         cost_function[i] = best_cost
+        av_cost_function[i] = cost_sum/population
         i += 1
 
-    return position_matrix, cost_function
+    return position_matrix, cost_function, av_cost_function
 
 
 if __name__ == "__main__":
