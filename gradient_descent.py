@@ -27,7 +27,7 @@ def gradient_descent(function = "rosenbrock", iterations = 50):
         data[i][0][0] = position[0]
         data[i][0][1] = position[1]
         cost_function[i] = cost
-        print("x {}, y {}, cost {}, iteration {}".format(position[0],position[1],cost,i))   
+        #print("x {}, y {}, cost {}, iteration {}".format(position[0],position[1],cost,i))
 
 
     return data,cost_function

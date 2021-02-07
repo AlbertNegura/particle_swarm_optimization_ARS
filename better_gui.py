@@ -197,7 +197,7 @@ class VisualizationPage(tk.Frame):
         Z = zs.reshape(X.shape)
 
 
-        self.ax1.contour(X, Y, Z, levels=25, cmap='viridis',alpha=0.3)
+        self.ax1.contourf(X, Y, Z, levels=250, cmap='viridis',alpha=0.3)
         self.ax1.scatter(0,0, c="white",marker="*", edgecolors="black", s=250)
         self.ax1.title.set_text("2D Contour Plot of Objective Function")
 
@@ -252,8 +252,8 @@ class VisualizationPage(tk.Frame):
         X, Y = np.meshgrid(x, y)
         zs = np.array(self.function_of(np.float32(np.ravel(X)), np.float32(np.ravel(Y))))
         Z = zs.reshape(X.shape)
-
         self.ax2.plot_surface(X, Y, Z, cmap=cm.nipy_spectral, alpha=0.3)
+        self.ax2.view_init(elev=20., azim=75)
         self.ax2.scatter(0,0,0, c="white",marker="*", edgecolors="black", s=250)
         # ax.contour3D(X, Y, Z, 50, cmap='gray', linestyles="solid")
         self.ax2.title.set_text("3D Plot of Objective Function")
@@ -270,13 +270,13 @@ class VisualizationPage(tk.Frame):
 
     def cost_plot(self,data):
         self.ax3.set(xlim=[0, data.shape[0]], xlabel='Iterations', ylabel='Best Cost')
-        self.ax3.set(ylim=[np.min(data), np.max(data)])
+        self.ax3.set(ylim=[0, np.max(data)])
         self.ax3.title.set_text('Min Cost Function')
         self.ax3.plot(data, lw=3)
 
     def av_cost_plot(self,data):
         self.ax4.set(xlim=[0, data.shape[0]], xlabel='Iterations', ylabel='Best Cost')
-        self.ax4.set(ylim=[np.min(data), np.max(data)])
+        self.ax4.set(ylim=[0, np.max(data)])
         self.ax4.title.set_text('Average Cost Function')
         self.ax4.plot(data, lw=3)
 
