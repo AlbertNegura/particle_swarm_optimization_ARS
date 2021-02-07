@@ -60,7 +60,7 @@ class Particle:
         r2 = np.random.uniform(size=(2))
         if len(self.neighbourhood) == 1: # global
             for i in range(2):
-                self.velocity[i] = a*self.velocity[i] + b*r1[i]*(self.best_minimum_position[i]-self.position[i]) + c*r2[i]*(pos_best_cost[i]-self.position[i])
+                self.velocity[i] = a*self.velocity[i] + c*r1[i]*(self.best_minimum_position[i]-self.position[i]) + b*r2[i]*(pos_best_cost[i]-self.position[i])
                 # if v(t+1) is larger, clip it to vmax
                 if self.velocity[i] > self.upper_bound_vel:
                     self.velocity[i] = self.upper_bound_vel
@@ -75,7 +75,7 @@ class Particle:
             best_neighbour = [swarm[best_neighbour[1]],swarm[best_neighbour[2]]]
             pos_best_cost = swarm[np.argmin([best_neighbour[0].cost,best_neighbour[1].cost])].position
             for i in range(2):
-                self.velocity[i] = a*self.velocity[i] + b*r1*(self.best_minimum_position[i]-self.position[i]) + c*r2*(pos_best_cost[i]-self.position[i])
+                self.velocity[i] = a*self.velocity[i] + c*r1*(self.best_minimum_position[i]-self.position[i]) + b*r2*(pos_best_cost[i]-self.position[i])
                 # if v(t+1) is larger, clip it to vmax
                 if self.velocity[i] > self.upper_bound_vel:
                     self.velocity[i] = self.upper_bound_vel
@@ -87,7 +87,7 @@ class Particle:
             best_neighbours = [swarm[self.neighbourhood[0]],swarm[self.neighbourhood[2]]]
             pos_best_cost = swarm[np.argmin([best_neighbours[0].cost,best_neighbours[1].cost])].position
             for i in range(2):
-                self.velocity[i] = a*self.velocity[i] + b*r1*(self.best_minimum_position[i]-self.position[i]) + c*r2*(pos_best_cost[i]-self.position[i])
+                self.velocity[i] = a*self.velocity[i] + c*r1*(self.best_minimum_position[i]-self.position[i]) + b*r2*(pos_best_cost[i]-self.position[i])
                 # if v(t+1) is larger, clip it to vmax
                 if self.velocity[i] > self.upper_bound_vel:
                     self.velocity[i] = self.upper_bound_vel
@@ -99,7 +99,7 @@ class Particle:
             best_neighbours = [swarm[self.neighbourhood[0]],swarm[self.neighbourhood[1]],swarm[self.neighbourhood[3]],swarm[self.neighbourhood[4]]]
             pos_best_cost = swarm[np.argmin([best_neighbours[0].cost,best_neighbours[1].cost,best_neighbours[2].cost,best_neighbours[3].cost])].position
             for i in range(2):
-                self.velocity[i] = a*self.velocity[i] + b*r1*(self.best_minimum_position[i]-self.position[i]) + c*r2*(pos_best_cost[i]-self.position[i])
+                self.velocity[i] = a*self.velocity[i] + c*r1*(self.best_minimum_position[i]-self.position[i]) + b*r2*(pos_best_cost[i]-self.position[i])
                 # if v(t+1) is larger, clip it to vmax
                 if self.velocity[i] > self.upper_bound_vel:
                     self.velocity[i] = self.upper_bound_vel

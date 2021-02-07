@@ -73,7 +73,7 @@ class StartPage(tk.Frame):
         label2 = tk.Label(self, text=("""Select function to minimize."""), font=LARGE_FONT)
         label2.pack(pady=10,padx=10)
         self.function = "rosenbrock"
-        self.func_var = IntVar()
+        self.func_var = IntVar(self)
         self.function_radio1 = tk.Radiobutton(self, text="Rosenbrock (DEFAULT)", variable=self.func_var, value=0, command=self.set_func)
         self.function_radio1.pack()
         self.function_radio2 = tk.Radiobutton(self, text="Rastrigin", variable=self.func_var, value=1, command=self.set_func)
@@ -83,7 +83,7 @@ class StartPage(tk.Frame):
         label3 = tk.Label(self, text=("""Select algorithm (note that gradient descent is independent of sliders and neighbourhood selection)."""), font=LARGE_FONT)
         label3.pack(pady=10,padx=10)
         self.algorithm = "pso"
-        self.alg_var = IntVar()
+        self.alg_var = IntVar(self)
         self.algorithm_radio1 = tk.Radiobutton(self, text="Particle Swarm Optimization (DEFAULT)", variable=self.alg_var, value=0, command=self.set_algo)
         self.algorithm_radio1.pack()
         self.algorithm_radio2 = tk.Radiobutton(self, text="Gradient Descent (note that sliders don't do anything)", variable=self.alg_var, value=1, command=self.set_algo)
@@ -92,7 +92,7 @@ class StartPage(tk.Frame):
         label4 = tk.Label(self, text=("""Select neighbourhood behaviour for PSO."""), font=LARGE_FONT)
         label4.pack(pady=10,padx=10)
         self.neighbourhood = "global"
-        self.neigh_var = IntVar()
+        self.neigh_var = IntVar(self)
         self.neighbourhood_radio1 = tk.Radiobutton(self, text="Global Neighbourhood (DEFAULT)", variable=self.neigh_var, value=0, command=self.set_neighbourhood)
         self.neighbourhood_radio1.pack()
         self.neighbourhood_radio2 = tk.Radiobutton(self, text="Social Neighbourhood with 2 Neighbours", variable=self.neigh_var, value=1, command=self.set_neighbourhood)
