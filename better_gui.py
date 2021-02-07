@@ -58,49 +58,47 @@ class StartPage(tk.Frame):
         label1.pack(pady=10,padx=10)
 
         self.omega_slider = tk.Scale(self, from_=0.00, to=1.00, length=300,tickinterval=10, digits=3, resolution=0.01, orient=HORIZONTAL, label="Omega")
-        self.omega_slider.set(0.90)
         self.omega_slider.pack()
         self.social_slider = tk.Scale(self, from_=0.00, to=10.00, length=300,tickinterval=10, digits=4, resolution=0.01, orient=HORIZONTAL, label="Social Constant")
-        self.social_slider.set(2.00)
         self.social_slider.pack()
         self.cognitive_slider = tk.Scale(self, from_=0.00, to=10.00, length=300,tickinterval=10, digits=4, resolution=0.01, orient=HORIZONTAL, label="Cognitive Constant")
-        self.cognitive_slider.set(2.00)
         self.cognitive_slider.pack()
         self.population_slider = tk.Scale(self, from_=0, to=100, length=300,tickinterval=10, orient=HORIZONTAL, label="Population")
-        self.population_slider.set(20)
         self.population_slider.pack()
         self.iterations_slider = tk.Scale(self, from_=0, to=1000, length=300,tickinterval=100, orient=HORIZONTAL, label="Iterations")
-        self.iterations_slider.set(50)
         self.iterations_slider.pack()
 
 
         label2 = tk.Label(self, text=("""Select function to minimize."""), font=LARGE_FONT)
         label2.pack(pady=10,padx=10)
         self.function = "rosenbrock"
-        self.function_radio1 = tk.Radiobutton(self, text="Rosenbrock (DEFAULT)", variable=self.function, value="rosenbrock")
+        self.func_var = IntVar()
+        self.function_radio1 = tk.Radiobutton(self, text="Rosenbrock (DEFAULT)", variable=self.func_var, value=0, command=self.set_func)
         self.function_radio1.pack()
-        self.function_radio2 = tk.Radiobutton(self, text="Rastrigin", variable=self.function, value="rastrigin")
+        self.function_radio2 = tk.Radiobutton(self, text="Rastrigin", variable=self.func_var, value=1, command=self.set_func)
         self.function_radio2.pack()
 
 
         label3 = tk.Label(self, text=("""Select algorithm (note that gradient descent is independent of sliders and neighbourhood selection)."""), font=LARGE_FONT)
         label3.pack(pady=10,padx=10)
         self.algorithm = "pso"
-        self.algorithm_radio1 = tk.Radiobutton(self, text="Particle Swarm Optimization (DEFAULT)", variable=self.algorithm, value="pso")
+        self.alg_var = IntVar()
+        self.algorithm_radio1 = tk.Radiobutton(self, text="Particle Swarm Optimization (DEFAULT)", variable=self.alg_var, value=0, command=self.set_algo)
         self.algorithm_radio1.pack()
-        self.algorithm_radio2 = tk.Radiobutton(self, text="Gradient Descent (note that sliders don't do anything)", variable=self.algorithm, value="gd")
+        self.algorithm_radio2 = tk.Radiobutton(self, text="Gradient Descent (note that sliders don't do anything)", variable=self.alg_var, value=1, command=self.set_algo)
         self.algorithm_radio2.pack()
 
         label4 = tk.Label(self, text=("""Select neighbourhood behaviour for PSO."""), font=LARGE_FONT)
         label4.pack(pady=10,padx=10)
         self.neighbourhood = "global"
-        self.neighbourhood_radio1 = tk.Radiobutton(self, text="Global Neighbourhood (DEFAULT)", variable=self.neighbourhood, value="global")
+        self.neigh_var = IntVar()
+        self.neighbourhood_radio1 = tk.Radiobutton(self, text="Global Neighbourhood (DEFAULT)", variable=self.neigh_var, value=0, command=self.set_neighbourhood)
         self.neighbourhood_radio1.pack()
-        self.neighbourhood_radio2 = tk.Radiobutton(self, text="Social Neighbourhood with 2 Neighbours", variable=self.neighbourhood, value="social-two")
+        self.neighbourhood_radio2 = tk.Radiobutton(self, text="Social Neighbourhood with 2 Neighbours", variable=self.neigh_var, value=1, command=self.set_neighbourhood)
         self.neighbourhood_radio2.pack()
-        self.neighbourhood_radio3 = tk.Radiobutton(self, text="Social Neighbourhood with 4 Neighbours", variable=self.neighbourhood, value="social-four")
+        self.neighbourhood_radio3 = tk.Radiobutton(self, text="Social Neighbourhood with 4 Neighbours", variable=self.neigh_var, value=2, command=self.set_neighbourhood)
         self.neighbourhood_radio3.pack()
-        self.neighbourhood_radio4 = tk.Radiobutton(self, text="Geographical Neighbourhood with 2 Nearest Neighbours", variable=self.neighbourhood, value="geographical")
+        self.neighbourhood_radio4 = tk.Radiobutton(self, text="Geographical Neighbourhood with 2 Nearest Neighbours", variable=self.neigh_var, value=3, command=self.set_neighbourhood)
         self.neighbourhood_radio4.pack()
 
         button1 = Button(self, text="Visualize",
@@ -108,12 +106,24 @@ class StartPage(tk.Frame):
         button1.pack()
 
         button2 = Button(self, text="Reset to Default Values",
-                            command=quit)
+                            command=lambda: self.set_default)
         button2.pack()
 
         button3 = Button(self, text="Exit",
                             command=quit)
         button3.pack()
+
+        self.update_all()
+        self.set_default()
+
+    def set_neighbourhood(self):
+        self.neighbourhood = "global" if self.neigh_var.get()==0 else "social-two"  if self.neigh_var.get()==1 else "social-four" if self.neigh_var.get()==2  else "geographical"
+
+    def set_algo(self):
+        self.algorithm = "pso" if self.alg_var.get()==0 else "gd"
+
+    def set_func(self):
+        self.function = "rosenbrock" if self.func_var.get()==0 else "rastrigin"
 
     def showFrame(self,parent,controller):
         self.update_all()
@@ -125,9 +135,16 @@ class StartPage(tk.Frame):
         self.cognitive = self.cognitive_slider.get()
         self.population = self.population_slider.get()
         self.iterations = self.iterations_slider.get()
-        self.neighbourhood = self.neighbourhood
-        self.function = self.function
-        self.algorithm = self.algorithm
+        self.neighbourhood = "global" if self.neigh_var.get()==0 else "social-two"  if self.neigh_var.get()==1 else "social-four" if self.neigh_var.get()==2  else "geographical"
+        self.function = "rosenbrock" if self.func_var.get()==0 else "rastrigin"
+        self.algorithm = "pso" if self.alg_var.get()==0 else "gd"
+
+    def set_default(self):
+        self.iterations_slider.set(50)
+        self.population_slider.set(20)
+        self.cognitive_slider.set(2.00)
+        self.social_slider.set(2.00)
+        self.omega_slider.set(0.90)
 
 class VisualizationPage(tk.Frame):
 
@@ -138,7 +155,7 @@ class VisualizationPage(tk.Frame):
         label.pack(pady=10,padx=10)
 
         button1 = Button(self, text="Back to Home",
-                            command=lambda: controller.show_frame(StartPage))
+                            command=lambda: self.go_back(controller))
         button1.pack()
 
         self.figure = Figure(figsize=(10,6), dpi=100)
@@ -153,6 +170,14 @@ class VisualizationPage(tk.Frame):
         button2 = Button(self, text="Execute",
                             command=lambda: self.execute())
         button2.pack()
+
+        if PSO.frames[StartPage].algorithm == "pso":
+            self.text = ("Algorithm: "+ ("Particle Swarm Optimization" if PSO.frames[StartPage].algorithm else "Gradient Descent") + " on function: " + PSO.frames[StartPage].function + "."+"\nPopulation="+str(PSO.frames[StartPage].population)+";iterations="+str(PSO.frames[StartPage].iterations)+"\nomega="+str(PSO.frames[StartPage].omega)+" social constant="+str(PSO.frames[StartPage].social)+" cognitive constant="+str(PSO.frames[StartPage].cognitive))
+        elif PSO.frames[StartPage].algorithm == "gd":
+            self.text = ("Algorithm: "+ ("Gradient Descent" if PSO.frames[StartPage].algorithm else "Gradient Descent") + " on function: " + PSO.frames[StartPage].function + ".")
+
+        self.label2 = tk.Label(self, text=self.text, font=LARGE_FONT)
+        self.label2.pack(pady=10,padx=10)
 
         self.canvas.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=False)
 
@@ -183,7 +208,7 @@ class VisualizationPage(tk.Frame):
             lines.append(line)
         return data, scatters, lines
 
-    def animate_contour(self, i, data, scatters, lines, surf_data, surf_zs, surf_scatters, surf_lines):
+    def animate(self, i, data, scatters, lines, surf_data, surf_zs, surf_scatters, surf_lines, algorithm):
         plot_data = data[i, :, :2]
         scatters.set_offsets(plot_data)
         if i > 0:
@@ -254,11 +279,6 @@ class VisualizationPage(tk.Frame):
 
     def execute(self):
         global ani1
-        self.ax1.cla()
-        self.ax2.cla()
-        self.ax3.cla()
-        self.ax4.cla()
-
         PSO.frames[StartPage].update_all()
         self.function = PSO.frames[StartPage].function
         self.population = PSO.frames[StartPage].population
@@ -276,16 +296,35 @@ class VisualizationPage(tk.Frame):
             cont_data, cont_scatters, cont_lines = self.contour_plot(data2)
             surf_data, surf_zs, surf_scatters, surf_lines = self.surface_plot(data2)
             self.cost_plot(cost2)
-        if PSO.frames[StartPage].algorithm == "pso":
-            ani1 = animation.FuncAnimation(self.figure, self.animate_contour, frames=self.iterations,
-                                           fargs=[cont_data, cont_scatters, cont_lines, surf_data, surf_zs, surf_scatters, surf_lines], interval=10,
+        else: #default to PSO
+            cont_data, cont_scatters, cont_lines = self.contour_plot(data)
+            surf_data, surf_zs, surf_scatters, surf_lines = self.surface_plot(data)
+            self.cost_plot(cost)
+            self.av_cost_plot(cost)
+
+        ani1 = animation.FuncAnimation(self.figure, self.animate, frames=self.iterations,
+                                           fargs=[cont_data, cont_scatters, cont_lines, surf_data, surf_zs, surf_scatters, surf_lines, PSO.frames[StartPage].algorithm], interval=10,
                                            blit=False, repeat=True)
+        if PSO.frames[StartPage].algorithm == "pso":
+            self.text = ("Algorithm: "+ ("Particle Swarm Optimization" if PSO.frames[StartPage].algorithm else "Gradient Descent") + " on function: " + PSO.frames[StartPage].function + "."+"\nPopulation="+str(PSO.frames[StartPage].population)+";iterations="+str(PSO.frames[StartPage].iterations)+"\nomega="+str(PSO.frames[StartPage].omega)+" social constant="+str(PSO.frames[StartPage].social)+" cognitive constant="+str(PSO.frames[StartPage].cognitive))
+            self.label2.config(text=self.text)
+        elif PSO.frames[StartPage].algorithm == "gd":
+            self.text = ("Algorithm: "+ ("Gradient Descent" if PSO.frames[StartPage].algorithm else "Gradient Descent") + " on function: " + PSO.frames[StartPage].function + ".")
+            self.label2.config(text=self.text)
 
         self.refresh()
+        self.update_idletasks()
 
     def refresh(self):
         self.canvas.draw()
 
+    def go_back(self, controller):
+        ani1.event_source.stop()
+        self.ax1.cla()
+        self.ax2.cla()
+        self.ax3.cla()
+        self.ax4.cla()
+        controller.show_frame(StartPage)
 
 
 
