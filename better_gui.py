@@ -171,7 +171,7 @@ class VisualizationPage(tk.Frame):
         button2 = Button(self, text="Execute",
                             command=lambda: self.execute())
         button2.pack()
-
+        self.minimum = [0,0]
         if PSO.frames[StartPage].algorithm == "pso":
             self.text = ("Algorithm: "+ ("Particle Swarm Optimization" if PSO.frames[StartPage].algorithm else "Gradient Descent") + " on function: " + PSO.frames[StartPage].function + "."+"\nPopulation="+str(PSO.frames[StartPage].population)+";iterations="+str(PSO.frames[StartPage].iterations)+"\nomega="+str(PSO.frames[StartPage].omega)+" social constant="+str(PSO.frames[StartPage].social)+" cognitive constant="+str(PSO.frames[StartPage].cognitive))
         elif PSO.frames[StartPage].algorithm == "gd":
@@ -197,7 +197,8 @@ class VisualizationPage(tk.Frame):
         Z = zs.reshape(X.shape)
 
 
-        self.ax1.contour(X, Y, Z, levels=50, cmap='viridis')
+        self.ax1.contour(X, Y, Z, levels=25, cmap='viridis',alpha=0.3)
+        self.ax1.scatter(0,0, c="white",marker="*", edgecolors="black", s=250)
         self.ax1.title.set_text("2D Contour Plot of Objective Function")
 
         xs = data[:, :, 0]
@@ -229,7 +230,7 @@ class VisualizationPage(tk.Frame):
         plot_data_x = surf_data[i, :, 0]
         plot_data_y = surf_data[i, :, 1]
         plot_data_z = surf_zs[i]
-        surf_scatters._offsets3d = (plot_data_x, plot_data_y, plot_data_z)
+        surf_scatters._offsets3d = (plot_data_x, plot_data_y, plot_data_z+0.1)
         if i > 0:
             for lnum, line in enumerate(surf_lines):
                 if i == 2:
@@ -252,14 +253,15 @@ class VisualizationPage(tk.Frame):
         zs = np.array(self.function_of(np.float32(np.ravel(X)), np.float32(np.ravel(Y))))
         Z = zs.reshape(X.shape)
 
-        self.ax2.plot_surface(X, Y, Z, cmap=cm.nipy_spectral, alpha=0.6)
+        self.ax2.plot_surface(X, Y, Z, cmap=cm.nipy_spectral, alpha=0.3)
+        self.ax2.scatter(0,0,0, c="white",marker="*", edgecolors="black", s=250)
         # ax.contour3D(X, Y, Z, 50, cmap='gray', linestyles="solid")
         self.ax2.title.set_text("3D Plot of Objective Function")
 
         xs = data[:, :, 0]
         ys = data[:, :, 1]
         zzs = self.function_of(xs, ys, self.function)
-        scatters = self.ax2.scatter(xs[0], ys[0], zzs[0], c="red", marker="o", vmin=0, vmax=data.shape[1])
+        scatters = self.ax2.scatter(xs[0], ys[0], zzs[0]+0.01, c="red", marker="o", vmin=0, vmax=data.shape[1])
         lines = []
         for i in range(data.shape[1]):
             line = self.ax2.plot(xs[0, i], ys[0, i], zzs[0, i], c="red", alpha=0.3)
