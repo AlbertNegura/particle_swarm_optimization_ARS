@@ -12,7 +12,6 @@ def pso(population=20, iterations=1000, a=0.5, b=0.5, c=0.5, optimize_a=True, fu
     pos_best_cost = []
     cost_function = np.zeros(iterations)
 
-    print(a_range)
     if function == "rastrigin":  # rastrigin
         bounds = [-5.12, 5.12]
     elif function == "rosenbrock":  # rosenbrock a=0,b=1
