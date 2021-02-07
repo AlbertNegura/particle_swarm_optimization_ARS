@@ -153,7 +153,13 @@ class VisualizationPage(tk.Frame):
 
         canvas._tkcanvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
-        print(home.omega)
+        button1 = Button(self, text="Execute",
+                            command=lambda: self.execute())
+        button1.pack()
+
+    def execute(self):
+        PSO.frames[StartPage].update_all()
+        print(PSO.frames[StartPage].population)
 
 
 
