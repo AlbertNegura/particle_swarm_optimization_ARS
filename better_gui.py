@@ -60,7 +60,7 @@ class StartPage(tk.Frame):
         label1 = ttk.Label(self, text=("""Particle Swarm Optimization Visualization\nAuthors: Julien Havel, Albert Negura, Sergi Nogues"""), font=LARGE_FONT)
         label1.pack(pady=10,padx=10)
 
-        self.omega_slider = ttk.Scale(self, from_=0.00, to=1.00, length=600,tickinterval=10, digits=3, resolution=0.01, orient=HORIZONTAL, label="Omega")
+        self.omega_slider = tk.Scale(self, from_=0.00, to=1.00, length=600,tickinterval=10, digits=3, resolution=0.01, orient=HORIZONTAL, label="Omega")
         self.omega_slider.pack()
         self.social_slider = tk.Scale(self, from_=0.00, to=10.00, length=600,tickinterval=10, digits=4, resolution=0.01, orient=HORIZONTAL, label="Social Constant")
         self.social_slider.pack()
@@ -153,11 +153,11 @@ class VisualizationPage(tk.Frame):
 
     def __init__(self, parent, controller, home):
         self.controller = controller
-        tk.Frame.__init__(self, parent)
-        label = tk.Label(self, text="Visualization", font=LARGE_FONT)
+        ttk.Frame.__init__(self, parent)
+        label = ttk.Label(self, text="Visualization", font=LARGE_FONT)
         label.pack(pady=10,padx=10)
 
-        button1 = Button(self, text="Back to Home",
+        button1 = ttk.Button(self, text="Back to Home",
                             command=lambda: self.go_back(controller))
         button1.pack()
 
@@ -170,7 +170,7 @@ class VisualizationPage(tk.Frame):
 
         self.canvas._tkcanvas.pack(side=tk.TOP, fill=tk.BOTH, expand=False)
 
-        button2 = Button(self, text="Execute",
+        button2 = ttk.Button(self, text="Execute",
                             command=lambda: self.execute())
         button2.pack()
         self.minimum = [0,0]
@@ -179,7 +179,7 @@ class VisualizationPage(tk.Frame):
         elif PSO.frames[StartPage].algorithm == "gd":
             self.text = ("Algorithm: "+ ("Gradient Descent" if PSO.frames[StartPage].algorithm else "Gradient Descent") + " on function: " + PSO.frames[StartPage].function + ".")
 
-        self.label2 = tk.Label(self, text=self.text, font=LARGE_FONT)
+        self.label2 = ttk.Label(self, text=self.text, font=LARGE_FONT)
         self.label2.pack(pady=10,padx=10)
 
         self.canvas.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=False)
