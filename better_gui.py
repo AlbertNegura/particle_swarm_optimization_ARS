@@ -17,6 +17,7 @@ import gradient_descent
 
 LARGE_FONT= ("Verdana", 12)
 style.use("ggplot")
+ani1 = None
 
 class PSO(tk.Tk):
     frames = {}
@@ -279,6 +280,12 @@ class VisualizationPage(tk.Frame):
 
     def execute(self):
         global ani1
+        if ani1 is not None:
+            ani1.event_source.stop()
+        self.ax1.cla()
+        self.ax2.cla()
+        self.ax3.cla()
+        self.ax4.cla()
         PSO.frames[StartPage].update_all()
         self.function = PSO.frames[StartPage].function
         self.population = PSO.frames[StartPage].population
