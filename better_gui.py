@@ -58,15 +58,15 @@ class StartPage(tk.Frame):
         label1 = tk.Label(self, text=("""Particle Swarm Optimization Visualization\nAuthors: Julien Havel, Albert Negura, Sergi Nogues"""), font=LARGE_FONT)
         label1.pack(pady=10,padx=10)
 
-        self.omega_slider = tk.Scale(self, from_=0.00, to=1.00, length=300,tickinterval=10, digits=3, resolution=0.01, orient=HORIZONTAL, label="Omega")
+        self.omega_slider = tk.Scale(self, from_=0.00, to=1.00, length=600,tickinterval=10, digits=3, resolution=0.01, orient=HORIZONTAL, label="Omega")
         self.omega_slider.pack()
-        self.social_slider = tk.Scale(self, from_=0.00, to=10.00, length=300,tickinterval=10, digits=4, resolution=0.01, orient=HORIZONTAL, label="Social Constant")
+        self.social_slider = tk.Scale(self, from_=0.00, to=10.00, length=600,tickinterval=10, digits=4, resolution=0.01, orient=HORIZONTAL, label="Social Constant")
         self.social_slider.pack()
-        self.cognitive_slider = tk.Scale(self, from_=0.00, to=10.00, length=300,tickinterval=10, digits=4, resolution=0.01, orient=HORIZONTAL, label="Cognitive Constant")
+        self.cognitive_slider = tk.Scale(self, from_=0.00, to=10.00, length=600,tickinterval=10, digits=4, resolution=0.01, orient=HORIZONTAL, label="Cognitive Constant")
         self.cognitive_slider.pack()
-        self.population_slider = tk.Scale(self, from_=0, to=100, length=300,tickinterval=10, orient=HORIZONTAL, label="Population")
+        self.population_slider = tk.Scale(self, from_=0, to=100, length=600,tickinterval=10, orient=HORIZONTAL, label="Population")
         self.population_slider.pack()
-        self.iterations_slider = tk.Scale(self, from_=0, to=1000, length=300,tickinterval=100, orient=HORIZONTAL, label="Iterations")
+        self.iterations_slider = tk.Scale(self, from_=0, to=1000, length=600,tickinterval=100, orient=HORIZONTAL, label="Iterations")
         self.iterations_slider.pack()
 
 
