@@ -13,6 +13,7 @@ from tkinter import *
 
 import numpy as np
 import particle_swarm_optimization
+import gradient_descent
 
 LARGE_FONT= ("Verdana", 12)
 style.use("ggplot")
@@ -106,9 +107,13 @@ class StartPage(tk.Frame):
                             command=lambda: self.showFrame(parent=parent,controller=controller))
         button1.pack()
 
-        button2 = Button(self, text="Exit",
+        button2 = Button(self, text="Reset to Default Values",
                             command=quit)
         button2.pack()
+
+        button3 = Button(self, text="Exit",
+                            command=quit)
+        button3.pack()
 
     def showFrame(self,parent,controller):
         self.update_all()
@@ -178,11 +183,29 @@ class VisualizationPage(tk.Frame):
             lines.append(line)
         return data, scatters, lines
 
-    def animate_contour(self, i, data, scatters, lines):
+    def animate_contour(self, i, data, scatters, lines, surf_data, surf_zs, surf_scatters, surf_lines):
         plot_data = data[i, :, :2]
         scatters.set_offsets(plot_data)
         if i > 0:
             for lnum, line in enumerate(lines):
+                if i == 2:
+                    xs = data[i - 2:i, lnum, :2]
+                    line[0].set_data(xs[:, 0], xs[:, 1])
+                if i == 3:
+                    xs = data[i - 3:i, lnum, :2]
+                    line[0].set_data(xs[:, 0], xs[:, 1])
+                if i == 4:
+                    xs = data[i - 4:i, lnum, :2]
+                    line[0].set_data(xs[:, 0], xs[:, 1])
+                if i >= 5:
+                    xs = data[i - 5:i, lnum, :2]
+                    line[0].set_data(xs[:, 0], xs[:, 1])
+        plot_data_x = surf_data[i, :, 0]
+        plot_data_y = surf_data[i, :, 1]
+        plot_data_z = surf_zs[i]
+        surf_scatters._offsets3d = (plot_data_x, plot_data_y, plot_data_z)
+        if i > 0:
+            for lnum, line in enumerate(surf_lines):
                 if i == 2:
                     xs = data[i - 2:i, lnum, :2]
                     line[0].set_data(xs[:, 0], xs[:, 1])
@@ -217,27 +240,6 @@ class VisualizationPage(tk.Frame):
             lines.append(line)
         return data, zzs, scatters, lines
 
-    # Don't mind this too much, I was trying stuff out
-    def animate_surface(self,i, data, z_data, scatters, lines):
-        plot_data_x = data[i, :, 0]
-        plot_data_y = data[i, :, 1]
-        plot_data_z = z_data[i]
-        scatters._offsets3d = (plot_data_x, plot_data_y, plot_data_z)
-        if i > 0:
-            for lnum, line in enumerate(lines):
-                if i == 2:
-                    xs = data[i - 2:i, lnum, :2]
-                    line[0].set_data(xs[:, 0], xs[:, 1])
-                if i == 3:
-                    xs = data[i - 3:i, lnum, :2]
-                    line[0].set_data(xs[:, 0], xs[:, 1])
-                if i == 4:
-                    xs = data[i - 4:i, lnum, :2]
-                    line[0].set_data(xs[:, 0], xs[:, 1])
-                if i >= 5:
-                    xs = data[i - 5:i, lnum, :2]
-                    line[0].set_data(xs[:, 0], xs[:, 1])
-
     def cost_plot(self,data):
         self.ax3.set(xlim=[0, data.shape[0]], xlabel='Iterations', ylabel='Best Cost')
         self.ax3.set(ylim=[np.min(data), np.max(data)])
@@ -251,7 +253,7 @@ class VisualizationPage(tk.Frame):
         self.ax4.plot(data, lw=3)
 
     def execute(self):
-        global ani1, ani2
+        global ani1
         self.ax1.cla()
         self.ax2.cla()
         self.ax3.cla()
@@ -270,14 +272,15 @@ class VisualizationPage(tk.Frame):
             self.cost_plot(cost)
             self.av_cost_plot(cost)
         elif PSO.frames[StartPage].algorithm == "gd":
-            pass
+            data2, cost2 = gradient_descent.gradient_descent(function=self.function)
+            cont_data, cont_scatters, cont_lines = self.contour_plot(data2)
+            surf_data, surf_zs, surf_scatters, surf_lines = self.surface_plot(data2)
+            self.cost_plot(cost2)
+        if PSO.frames[StartPage].algorithm == "pso":
+            ani1 = animation.FuncAnimation(self.figure, self.animate_contour, frames=self.iterations,
+                                           fargs=[cont_data, cont_scatters, cont_lines, surf_data, surf_zs, surf_scatters, surf_lines], interval=10,
+                                           blit=False, repeat=True)
 
-        ani1 = animation.FuncAnimation(self.figure, self.animate_contour, frames=self.iterations,
-                                       fargs=[cont_data, cont_scatters, cont_lines], interval=10,
-                                       blit=False, repeat=True)
-        ani2 = animation.FuncAnimation(self.figure, self.animate_surface, frames=self.iterations,
-                                       fargs=[surf_data, surf_zs, surf_scatters, surf_lines], interval=10, blit=False,
-                                      repeat=True)
         self.refresh()
 
     def refresh(self):
@@ -287,5 +290,4 @@ class VisualizationPage(tk.Frame):
 
 
 app = PSO()
-#ani = animation.FuncAnimation(f, animate, interval=1000)
 app.mainloop()
