@@ -376,6 +376,7 @@ class VisualizationPage(tk.Frame):
             self.text = ("Algorithm: "+ ("Gradient Descent" if PSO.frames[StartPage].algorithm else "Gradient Descent") + " on function: " + PSO.frames[StartPage].function + ".")
             self.label2.config(text=self.text)
 
+        self.first_run = True
         self.refresh()
         self.update_idletasks()
 
