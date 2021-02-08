@@ -252,7 +252,12 @@ class VisualizationPage(tk.Frame):
         X, Y = np.meshgrid(x, y)
         zs = np.array(self.function_of(np.float32(np.ravel(X)), np.float32(np.ravel(Y))))
         Z = zs.reshape(X.shape)
-        self.ax2.plot_surface(X, Y, Z, cmap="viridis", alpha=0.45)
+        if self.function == "rastrigin":
+            self.ax2.plot_wireframe(X, Y, Z, cmap="viridis", alpha=0.15, rstride=10, cstride=10)
+            self.ax2.contour(X, Y, Z, cmap="viridis", alpha=0.25, levels=10)
+        else:
+            self.ax2.plot_wireframe(X, Y, Z, cmap="viridis", alpha=0.65, rstride=10, cstride=10)
+            self.ax2.contour(X, Y, Z, cmap="viridis", alpha=0.55, levels=50)
         self.ax2.view_init(elev=66., azim=50)
         self.ax2.scatter(0,0,0, c="white",marker="*", edgecolors="black", s=250)
         # ax.contour3D(X, Y, Z, 50, cmap='gray', linestyles="solid")
@@ -274,7 +279,7 @@ class VisualizationPage(tk.Frame):
         X, Y = np.meshgrid(x, y)
         zs = np.array(self.function_of(np.float32(np.ravel(X)), np.float32(np.ravel(Y))))
         Z = zs.reshape(X.shape)
-        self.ax2.plot_surface(X, Y, Z, cmap="viridis", alpha=0.15)
+        self.ax2.plot_wireframe(X, Y, Z, cmap="viridis", alpha=0.25, rstride=10, cstride=10)
         self.ax2.view_init(elev=66., azim=50)
         self.ax2.scatter(0,0,0, c="white",marker="*", edgecolors="black", s=250)
         # ax.contour3D(X, Y, Z, 50, cmap='gray', linestyles="solid")
