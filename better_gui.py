@@ -217,7 +217,7 @@ class VisualizationPage(tk.Frame):
         scatters = self.ax1.scatter(xs[0], ys[0], c="red", marker="o", vmin=0, vmax=data.shape[1], edgecolors="Black")
         lines = []
         for i in range(data.shape[1]):
-            line = self.ax1.plot(xs[0, i], ys[0, i], c="Black", alpha=0.3)
+            line = self.ax1.plot(xs[0, i], ys[0, i], c="Black", alpha=0.6)
             lines.append(line)
         return data, scatters, lines
 
@@ -237,7 +237,7 @@ class VisualizationPage(tk.Frame):
         scatters = self.ax1.scatter(xs, ys, c="red", marker="o", vmin=0, vmax=data.shape[1], edgecolors="Black")
         lines = []
         for i in range(data.shape[1]):
-            line = self.ax1.plot(data[:time, i,0], data[:time, i,1], alpha=0.3)
+            line = self.ax1.plot(data[:time, i,0], data[:time, i,1], alpha=0.6)
             lines.append(line)
         return data, scatters, lines
 
