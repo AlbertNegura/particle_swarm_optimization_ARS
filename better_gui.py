@@ -160,7 +160,7 @@ class VisualizationPage(tk.Frame):
                             command=lambda: self.go_back(controller))
         button1.pack()
 
-        self.figure = Figure(figsize=(6,6), dpi=100)
+        self.figure = Figure(figsize=(10,7), dpi=100)
         self.ax1=self.figure.add_subplot(221)
         self.ax2=self.figure.add_subplot(222, projection="3d")
         self.ax3=self.figure.add_subplot(223)
@@ -182,10 +182,10 @@ class VisualizationPage(tk.Frame):
         if PSO.frames[StartPage].algorithm == "pso":
             self.text = ("Algorithm: "+ ("Particle Swarm Optimization" if PSO.frames[StartPage].algorithm else "Gradient Descent") + " on function: " + PSO.frames[StartPage].function + "."+"\nPopulation="+str(PSO.frames[StartPage].population)+";iterations="+str(PSO.frames[StartPage].iterations)+"\nomega="+str(PSO.frames[StartPage].omega)+" social constant="+str(PSO.frames[StartPage].social)+" cognitive constant="+str(PSO.frames[StartPage].cognitive))
         elif PSO.frames[StartPage].algorithm == "gd":
-            self.text = ("Algorithm: "+ ("Gradient Descent" if PSO.frames[StartPage].algorithm else "Gradient Descent") + " on function: " + PSO.frames[StartPage].function + ".")
+            self.text = ("Algorithm: "+ ("Gradient Descent" if PSO.frames[StartPage].algorithm else "Gradient Descent") + " on function: " + PSO.frames[StartPage].function + "."+"\nPopulation="+str(PSO.frames[StartPage].population)+";iterations="+str(PSO.frames[StartPage].iterations))
 
         self.label2 = ttk.Label(self, text=self.text, font=LARGE_FONT)
-        self.label2.pack(pady=10,padx=10)
+        self.label2.pack()
 
         self.canvas.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=False)
         self.iterations_slider_shower = tk.Scale(self, from_=0, to=PSO.frames[StartPage].iterations, length=600,tickinterval=int(PSO.frames[StartPage].iterations/10), orient=HORIZONTAL, label="Current Time Step (non-interactable slider)")
@@ -371,7 +371,7 @@ class VisualizationPage(tk.Frame):
             self.cost_plot(cost)
             self.av_cost_plot(av_cost)
         elif PSO.frames[StartPage].algorithm == "gd":
-            data2, cost2 = gradient_descent.gradient_descent(function=self.function)
+            data2, cost2 = gradient_descent.gradient_descent(function=self.function, iterations=self.iterations, population=self.population)
             data2 = np.array(data2)
             cont_data, cont_scatters, cont_lines = self.contour_plot(data2)
             surf_data, surf_zs, surf_scatters, surf_lines = self.surface_plot(data2)
@@ -424,7 +424,7 @@ class VisualizationPage(tk.Frame):
                 self.cost_plot(cost)
                 self.av_cost_plot(av_cost)
             elif PSO.frames[StartPage].algorithm == "gd":
-                data, cost = gradient_descent.gradient_descent(function=self.function)
+                data, cost = gradient_descent.gradient_descent(function=self.function, iterations=self.iterations, population=self.population)
                 data = np.array(data)
                 cont_data, cont_scatters, cont_lines = self.contour_plot_step(data,i)
                 surf_data, surf_zs, surf_scatters, surf_lines = self.surface_plot_step(data,i)

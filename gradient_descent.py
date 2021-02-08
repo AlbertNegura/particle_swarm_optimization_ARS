@@ -1,30 +1,33 @@
 import numpy as np
 
-def gradient_descent(function = "rosenbrock", iterations = 50):
+def gradient_descent(function = "rosenbrock", iterations = 50, population=50):
     
     # rastrigin does not converge with LR bigger than 0.005, yet it cannot find the global minimum but a local minimum
     learning_rate = 0.1 if function == "rosenbrock" else 0.005
     bounds = [-2.4, 2.4] if function == "rosenbrock" else [-5.12, 5.12]
 
-    x0 = np.min(bounds) + np.random.rand(1, 2) * (np.max(bounds) - np.min(bounds))
-
-    position = x0[0, :]
-    data = [[[0, 0, np.inf] for _ in range(1)] for _ in range(iterations)]
+    data = [[[0, 0] for _ in range(population)] for _ in range(iterations)]
     cost_function = np.zeros(iterations)
+    cost_function_temp = np.zeros((population,iterations))
+    x0 = np.min(bounds) + np.random.rand(population, 2) * (np.max(bounds) - np.min(bounds))
+    for j in range(population):
+        position = x0[j, :]
+        for i in range(iterations):
+            cost = evaluate(function,position)
+            position = step(function,position,learning_rate)
+
+            for k in range(2):
+                if position[k] > np.max(bounds):
+                    position[k] = np.max(bounds)
+                if position[k] < np.min(bounds):
+                    position[k] = np.min(bounds)
+
+            data[i][j][0] = position[0]
+            data[i][j][1] = position[1]
+            cost_function_temp[j][i] = cost
     for i in range(iterations):
-        cost = evaluate(function,position)
-        position = step(function,position,learning_rate)
-
-        for j in range(2):
-            if position[j] > np.max(bounds):
-                position[j] = np.max(bounds)
-            if position[j] < np.min(bounds):
-                position[j] = np.min(bounds)
-
-        data[i][0][0] = position[0]
-        data[i][0][1] = position[1]
-        cost_function[i] = cost
-        #print("x {}, y {}, cost {}, iteration {}".format(position[0],position[1],cost,i))
+        cost_function[i] = np.min(cost_function_temp[:,i])
+            #print("x {}, y {}, cost {}, iteration {}".format(position[0],position[1],cost,i))
 
 
     return data,cost_function
