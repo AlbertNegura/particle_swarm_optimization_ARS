@@ -173,6 +173,10 @@ class VisualizationPage(tk.Frame):
         button2 = ttk.Button(self, text="Execute",
                             command=lambda: self.execute())
         button2.pack()
+        button3 = ttk.Button(self, text="Step",
+                            command=lambda: self.step())
+        button3.pack()
+        self.first_run = True
         self.minimum = [0,0]
         if PSO.frames[StartPage].algorithm == "pso":
             self.text = ("Algorithm: "+ ("Particle Swarm Optimization" if PSO.frames[StartPage].algorithm else "Gradient Descent") + " on function: " + PSO.frames[StartPage].function + "."+"\nPopulation="+str(PSO.frames[StartPage].population)+";iterations="+str(PSO.frames[StartPage].iterations)+"\nomega="+str(PSO.frames[StartPage].omega)+" social constant="+str(PSO.frames[StartPage].social)+" cognitive constant="+str(PSO.frames[StartPage].cognitive))
@@ -212,41 +216,27 @@ class VisualizationPage(tk.Frame):
             lines.append(line)
         return data, scatters, lines
 
-    def animate(self, i, data, scatters, lines, surf_data, surf_zs, surf_scatters, surf_lines, algorithm):
-        plot_data = data[i, :, :2]
-        scatters.set_offsets(plot_data)
-        if i > 0:
-            for lnum, line in enumerate(lines):
-                if i == 2:
-                    xs = data[i - 2:i, lnum, :2]
-                    line[0].set_data(xs[:, 0], xs[:, 1])
-                if i == 3:
-                    xs = data[i - 3:i, lnum, :2]
-                    line[0].set_data(xs[:, 0], xs[:, 1])
-                if i == 4:
-                    xs = data[i - 4:i, lnum, :2]
-                    line[0].set_data(xs[:, 0], xs[:, 1])
-                if i >= 5:
-                    xs = data[i - 5:i, lnum, :2]
-                    line[0].set_data(xs[:, 0], xs[:, 1])
-        plot_data_x = surf_data[i, :, 0]
-        plot_data_y = surf_data[i, :, 1]
-        plot_data_z = surf_zs[i]
-        surf_scatters._offsets3d = (plot_data_x, plot_data_y, plot_data_z+0.1)
-        if i > 0:
-            for lnum, line in enumerate(surf_lines):
-                if i == 2:
-                    xs = data[i - 2:i, lnum, :2]
-                    line[0].set_data(xs[:, 0], xs[:, 1])
-                if i == 3:
-                    xs = data[i - 3:i, lnum, :2]
-                    line[0].set_data(xs[:, 0], xs[:, 1])
-                if i == 4:
-                    xs = data[i - 4:i, lnum, :2]
-                    line[0].set_data(xs[:, 0], xs[:, 1])
-                if i >= 5:
-                    xs = data[i - 5:i, lnum, :2]
-                    line[0].set_data(xs[:, 0], xs[:, 1])
+    def contour_plot_step(self, data, time):
+        x = np.arange(np.min(self.bounds), np.max(self.bounds) + 0.05, 0.05)
+        y = np.arange(np.min(self.bounds), np.max(self.bounds) + 0.05, 0.05)
+        X, Y = np.meshgrid(x, y)
+        zs = np.array(self.function_of(np.ravel(X), np.ravel(Y)))
+        Z = zs.reshape(X.shape)
+
+
+        self.ax1.contourf(X, Y, Z, levels=250, cmap='viridis',alpha=0.3)
+        self.ax1.scatter(0,0, c="white",marker="*", edgecolors="black", s=250)
+        self.ax1.title.set_text("2D Contour Plot of Objective Function")
+
+        xs = data[time, :, 0]
+        ys = data[time, :, 1]
+        scatters = self.ax1.scatter(xs, ys, c="red", marker="o", vmin=0, vmax=data.shape[1], edgecolors="Black")
+        lines = []
+        for i in range(data.shape[1]):
+            line = self.ax1.plot(data[:time, i,0], data[:time, i,1], alpha=0.3)
+            lines.append(line)
+        return data, scatters, lines
+
 
     def surface_plot(self,data):
         x = np.arange(np.min(self.bounds), np.max(self.bounds) + 0.05, 0.05)
@@ -270,6 +260,25 @@ class VisualizationPage(tk.Frame):
             lines.append(line)
         return data, zzs, scatters, lines
 
+    def surface_plot_step(self,data, time):
+        x = np.arange(np.min(self.bounds), np.max(self.bounds) + 0.05, 0.05)
+        y = np.arange(np.min(self.bounds), np.max(self.bounds) + 0.05, 0.05)
+        X, Y = np.meshgrid(x, y)
+        zs = np.array(self.function_of(np.float32(np.ravel(X)), np.float32(np.ravel(Y))))
+        Z = zs.reshape(X.shape)
+        self.ax2.plot_surface(X, Y, Z, cmap=cm.nipy_spectral, alpha=0.3)
+        self.ax2.view_init(elev=20., azim=75)
+        self.ax2.scatter(0,0,0, c="white",marker="*", edgecolors="black", s=250)
+        # ax.contour3D(X, Y, Z, 50, cmap='gray', linestyles="solid")
+        self.ax2.title.set_text("3D Plot of Objective Function")
+
+        xs = data[time, :, 0]
+        ys = data[time, :, 1]
+        zzs = self.function_of(xs, ys, self.function)
+        scatters = self.ax2.scatter(xs, ys, zzs+0.01, c="red", marker="o", vmin=0, vmax=data.shape[1])
+        lines = []
+        return data, zzs, scatters, lines
+
     def cost_plot(self,data):
         self.ax3.set(xlim=[0, data.shape[0]], xlabel='Iterations', ylabel='Best Cost')
         self.ax3.set(ylim=[0, np.max(data)])
@@ -281,6 +290,42 @@ class VisualizationPage(tk.Frame):
         self.ax4.set(ylim=[0, np.max(data)])
         self.ax4.title.set_text('Average Cost Function')
         self.ax4.plot(data, lw=3)
+
+    def animate(self, i, data, scatters, lines, surf_data, surf_zs, surf_scatters, surf_lines, algorithm):
+        plot_data = data[i, :, :2]
+        scatters.set_offsets(plot_data)
+        if i > 0:
+            for lnum, line in enumerate(lines):
+                if i == 2:
+                    xs = data[i - 2:i, lnum, :2]
+                    line[0].set_data(xs[:, 0], xs[:, 1])
+                if i == 3:
+                    xs = data[i - 3:i, lnum, :2]
+                    line[0].set_data(xs[:, 0], xs[:, 1])
+                if i == 4:
+                    xs = data[i - 4:i, lnum, :2]
+                    line[0].set_data(xs[:, 0], xs[:, 1])
+                if i >= 5:
+                    xs = data[i - 5:i, lnum, :2]
+                    line[0].set_data(xs[:, 0], xs[:, 1])
+        plot_data_x = surf_data[i, :, 0]
+        plot_data_y = surf_data[i, :, 1]
+        plot_data_z = surf_zs[i]
+        surf_scatters._offsets3d = (plot_data_x, plot_data_y, plot_data_z + 0.1)
+        if i > 0:
+            for lnum, line in enumerate(surf_lines):
+                if i == 2:
+                    xs = data[i - 2:i, lnum, :2]
+                    line[0].set_data(xs[:, 0], xs[:, 1])
+                if i == 3:
+                    xs = data[i - 3:i, lnum, :2]
+                    line[0].set_data(xs[:, 0], xs[:, 1])
+                if i == 4:
+                    xs = data[i - 4:i, lnum, :2]
+                    line[0].set_data(xs[:, 0], xs[:, 1])
+                if i >= 5:
+                    xs = data[i - 5:i, lnum, :2]
+                    line[0].set_data(xs[:, 0], xs[:, 1])
 
     def execute(self):
         global ani1
@@ -326,6 +371,58 @@ class VisualizationPage(tk.Frame):
         self.refresh()
         self.update_idletasks()
 
+    def step(self):
+        global data, cost, av_cost, i
+        if self.first_run:
+            i=0
+            self.first_run = False
+            self.ax1.cla()
+            self.ax2.cla()
+            self.ax3.cla()
+            self.ax4.cla()
+            PSO.frames[StartPage].update_all()
+            self.function = PSO.frames[StartPage].function
+            self.population = PSO.frames[StartPage].population
+            self.iterations = PSO.frames[StartPage].iterations
+            self.bounds = [-2.4, 2.4] if self.function == "rosenbrock" else [-5.12, 5.12]
+            if PSO.frames[StartPage].algorithm == "pso":
+                data, cost, av_cost = particle_swarm_optimization.pso(population=PSO.frames[StartPage].population, iterations=PSO.frames[StartPage].iterations, function=self.function, optimize_a=False, a=PSO.frames[StartPage].omega, b=PSO.frames[StartPage].social, c=PSO.frames[StartPage].cognitive)
+                data = np.array(data)
+                cont_data, cont_scatters, cont_lines = self.contour_plot_step(data,i)
+                surf_data, surf_zs, surf_scatters, surf_lines = self.surface_plot_step(data,i)
+                self.cost_plot(cost)
+                self.av_cost_plot(cost)
+            elif PSO.frames[StartPage].algorithm == "gd":
+                data, cost = gradient_descent.gradient_descent(function=self.function)
+                cont_data, cont_scatters, cont_lines = self.contour_plot_step(data,i)
+                surf_data, surf_zs, surf_scatters, surf_lines = self.surface_plot_step(data,i)
+                self.cost_plot(cost)
+            else: #default to PSO
+                cont_data, cont_scatters, cont_lines = self.contour_plot_step(data,i)
+                surf_data, surf_zs, surf_scatters, surf_lines = self.surface_plot_step(data,i)
+                self.cost_plot(cost)
+                self.av_cost_plot(cost)
+
+            if PSO.frames[StartPage].algorithm == "pso":
+                self.text = ("Algorithm: "+ ("Particle Swarm Optimization" if PSO.frames[StartPage].algorithm else "Gradient Descent") + " on function: " + PSO.frames[StartPage].function + "."+"\nPopulation="+str(PSO.frames[StartPage].population)+";iterations="+str(PSO.frames[StartPage].iterations)+"\nomega="+str(PSO.frames[StartPage].omega)+" social constant="+str(PSO.frames[StartPage].social)+" cognitive constant="+str(PSO.frames[StartPage].cognitive))
+                self.label2.config(text=self.text)
+            elif PSO.frames[StartPage].algorithm == "gd":
+                self.text = ("Algorithm: "+ ("Gradient Descent" if PSO.frames[StartPage].algorithm else "Gradient Descent") + " on function: " + PSO.frames[StartPage].function + ".")
+                self.label2.config(text=self.text)
+            i+=1
+        else:
+            self.ax1.cla()
+            self.ax2.cla()
+            self.ax3.cla()
+            self.ax4.cla()
+            cont_data, cont_scatters, cont_lines = self.contour_plot_step(data,i)
+            surf_data, surf_zs, surf_scatters, surf_lines = self.surface_plot_step(data,i)
+            self.cost_plot(cost)
+            self.av_cost_plot(cost)
+            i+=1
+
+        self.refresh()
+        self.update_idletasks()
     def refresh(self):
         self.canvas.draw()
 
