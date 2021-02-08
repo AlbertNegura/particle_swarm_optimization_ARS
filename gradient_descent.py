@@ -1,9 +1,26 @@
+"""Particle Swarm Optimization algorithm
+
+Authors:
+Julien Havel
+Albert Negura
+Sergi Nogues Farres (primary)
+"""
 import numpy as np
 
 def gradient_descent(function = "rosenbrock", iterations = 50, population=50):
+    """
+
+    :param function: (str, default="rosenbrock", options="rosenbrock" "rastrigin") the cost function to optimize
+    :param iterations: (int, default=50) number of iterations or time steps the algorithm should simulate
+    :param population: (int, default=50) number of particles in the gradient descent swarm
+    :return: data, cost_function - a tuple of all results
+             data: list of the form [x,y,[z1,z2]], where x is the time step, y is the Particle object id, [z1,z2] represent the [x,y] position tuple of the particle at the respective time step.
+             cost_function: 1d list containing the minimum cost function value found by the swarm at each time step
+    """
     
     # rastrigin does not converge with LR bigger than 0.005, yet it cannot find the global minimum but a local minimum
     learning_rate = 0.1 if function == "rosenbrock" else 0.005
+    # same initialization as particle_swarm_optimization.py
     bounds = [-2.4, 2.4] if function == "rosenbrock" else [-5.12, 5.12]
 
     data = [[[0, 0] for _ in range(population)] for _ in range(iterations)]
@@ -13,6 +30,7 @@ def gradient_descent(function = "rosenbrock", iterations = 50, population=50):
     for j in range(population):
         position = x0[j, :]
         for i in range(iterations):
+            # main gradient descent
             cost = evaluate(function,position)
             position = step(function,position,learning_rate)
 
@@ -25,6 +43,7 @@ def gradient_descent(function = "rosenbrock", iterations = 50, population=50):
             data[i][j][0] = position[0]
             data[i][j][1] = position[1]
             cost_function_temp[j][i] = cost
+    # calculate the minimum cost among all gradient descent "particles"
     for i in range(iterations):
         cost_function[i] = np.min(cost_function_temp[:,i])
             #print("x {}, y {}, cost {}, iteration {}".format(position[0],position[1],cost,i))
@@ -33,6 +52,11 @@ def gradient_descent(function = "rosenbrock", iterations = 50, population=50):
     return data,cost_function
 
 def evaluate(function, position):
+        """
+        :param function: (str) Cost functions used (options: rastrigin rosenbrock)
+        :param position: (list of the form [x,y]) x-y coordinates for individual particle to evaluate
+        :return: cost of the particle based on the position
+        """
         b = 1
         a = 0
         A = 10
@@ -47,6 +71,13 @@ def evaluate(function, position):
             return b*(y - x ** 2) ** 2 + (a-x) ** 2
 
 def step(function, position,learning_rate):
+        """
+        Single step in gradient descent.
+        :param function: (str) Cost functions used (options: rastrigin rosenbrock)
+        :param position: (list of the form [x,y]) x-y coordinates for individual particle to evaluate
+        :param learning_rate: (float) gradient descent learning rate
+        :return: list of the form [x,y] containing the next position of the particle
+        """
         x = position[0]
         y = position[1]
 
@@ -63,4 +94,5 @@ def step(function, position,learning_rate):
         return [x_next,y_next]
 
 
-gradient_descent()        
+if __name__ == "__main__":
+    gradient_descent()
