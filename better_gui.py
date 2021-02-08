@@ -176,7 +176,7 @@ class VisualizationPage(tk.Frame):
         button3 = ttk.Button(self, text="Step",
                             command=lambda: self.step())
         button3.pack()
-        self.iterations_slider = tk.Scale(self, from_=0, to=PSO.frames[StartPage].iterations, length=600,tickinterval=int(PSO.frames[StartPage].iterations/10), orient=HORIZONTAL, label="Time step")
+        self.iterations_slider = tk.Scale(self, from_=0, to=PSO.frames[StartPage].iterations, length=600,tickinterval=int(PSO.frames[StartPage].iterations/10), orient=HORIZONTAL, label="Next Time Step")
         self.iterations_slider.pack()
         self.first_run = True
         self.minimum = [0,0]
@@ -189,6 +189,8 @@ class VisualizationPage(tk.Frame):
         self.label2.pack(pady=10,padx=10)
 
         self.canvas.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=False)
+        self.iterations_slider_shower = tk.Scale(self, from_=0, to=PSO.frames[StartPage].iterations, length=600,tickinterval=int(PSO.frames[StartPage].iterations/10), orient=HORIZONTAL, label="Current Time Step (non-interactable slider)")
+        self.iterations_slider_shower.pack()
 
 
     def function_of(self, x, y, a=0, b=1, A=10, dimensions=2):
@@ -294,6 +296,7 @@ class VisualizationPage(tk.Frame):
         self.ax4.plot(data, lw=3)
 
     def animate(self, i, data, scatters, lines, surf_data, surf_zs, surf_scatters, surf_lines, algorithm):
+        self.iterations_slider_shower.set(int(i))
         plot_data = data[i, :, :2]
         scatters.set_offsets(plot_data)
         if i > 0:
@@ -341,6 +344,7 @@ class VisualizationPage(tk.Frame):
         self.function = PSO.frames[StartPage].function
         self.population = PSO.frames[StartPage].population
         self.iterations = PSO.frames[StartPage].iterations
+        self.iterations_slider_shower.configure(to=self.iterations)
         self.bounds = [-2.4, 2.4] if self.function == "rosenbrock" else [-5.12, 5.12]
         data, cost, av_cost = particle_swarm_optimization.pso(population=PSO.frames[StartPage].population, iterations=PSO.frames[StartPage].iterations, function=self.function, optimize_a=False, a=PSO.frames[StartPage].omega, b=PSO.frames[StartPage].social, c=PSO.frames[StartPage].cognitive)
         data = np.array(data)
@@ -374,8 +378,10 @@ class VisualizationPage(tk.Frame):
         self.update_idletasks()
 
     def step(self):
-        global data, cost, av_cost, i
+        global data, cost, av_cost, i, ani
         if self.first_run:
+            if ani1 is not None:
+                ani1.event_source.stop()
             i=0
             self.first_run = False
             self.ax1.cla()
@@ -387,6 +393,7 @@ class VisualizationPage(tk.Frame):
             self.population = PSO.frames[StartPage].population
             self.iterations = PSO.frames[StartPage].iterations
             self.iterations_slider.configure(to=self.iterations)
+            self.iterations_slider_shower.set(int(i))
             self.bounds = [-2.4, 2.4] if self.function == "rosenbrock" else [-5.12, 5.12]
             if PSO.frames[StartPage].algorithm == "pso":
                 data, cost, av_cost = particle_swarm_optimization.pso(population=PSO.frames[StartPage].population, iterations=PSO.frames[StartPage].iterations, function=self.function, optimize_a=False, a=PSO.frames[StartPage].omega, b=PSO.frames[StartPage].social, c=PSO.frames[StartPage].cognitive)
@@ -420,6 +427,7 @@ class VisualizationPage(tk.Frame):
             if(i >= self.iterations):
                 i = 0
                 self.iterations_slider.set(0)
+            self.iterations_slider_shower.set(int(i))
             self.ax1.cla()
             self.ax2.cla()
             self.ax3.cla()
