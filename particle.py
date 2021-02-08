@@ -19,13 +19,13 @@ class Particle:
 
     def __init__(self, id, position, bounds=None, neighbourhood ="global", population = 0):
         """
-        Args:
-            id (int): A global id for the particle
-            position (list): A 2d list corresponding to the position of the particle of the form [x,y]
-            bounds (list): A 2d list corresponding to the (square area) bounds of the cost function of the form [min,max]
-            neighbourhood (str, optional): Type of neighbourhood used (options: global social-two social-four geographical)
-            population (int, optional): Number of particles in the swarm
+        :param id: (int) A global id for the particle
+        :param position: (list) A 2d list corresponding to the position of the particle of the form [x,y]
+        :param bounds: (list) A 2d list corresponding to the (square area) bounds of the cost function of the form [min,max]
+        :param neighbourhood: (str, optional) Type of neighbourhood used (options: global social-two social-four geographical)
+        :param population: (int, optional) Number of particles in the swarm
         """
+
         if bounds is None:
             bounds = [-1, 1]
         self.id = id
@@ -66,12 +66,12 @@ class Particle:
     def evaluate(self, function, b=1, a=0, A=10, dimensions=2):
         """
         Sets the cost of the particle based on its current position.
-        Args:
-            function (str): Cost functions used (options: rastrigin rosenbrock)
-            b (int, optional): Rosenbrock function x-y component
-            a (int, optional): Rosenbrock function a component (defined minimum area)
-            A (int, optional): Rastrigin function constant
-            dimensions (int, optional): Number of dimensions (options: 2)
+        :param function: (str) Cost functions used (options: rastrigin rosenbrock)
+        :param b: (int, optional) Rosenbrock function x-y component
+        :param a: (int, optional) Rosenbrock function a component (defined minimum area)
+        :param A: (int, optional) Rastrigin function constant
+        :param dimensions: (int, optional) Number of dimensions (options: 2)
+        :return:
         """
         x = self.position[0]
         y = self.position[1]
@@ -87,12 +87,12 @@ class Particle:
     def update_velocity(self, a, b, c, pos_best_cost, swarm):
         """
         Sets the velocity of the particle based on its current position as well as its best minimum position and the best swarm minimum position.
-        Args:
-            a (float): Omega / Inertia constant
-            b (float): Social constant
-            c (float): Cognitive constant
-            pos_best_cost (float): Best minimum cost found by swarm
-            swarm (list): A list with all members of the swarm
+        :param a: (float) Omega / Inertia constant
+        :param b: (float) Social constant
+        :param c: (float) Cognitive constant
+        :param pos_best_cost: (float) Best minimum cost found by swarm
+        :param swarm: (list) A list with all members of the swarm
+        :return:
         """
         # generate some randomization factors for the acceleration vectors
         r1 = np.random.uniform(low=0., high=1.0, size=(2))
@@ -153,6 +153,7 @@ class Particle:
     def update_position(self):
         """
         Updates the position of the particles based on its velocity, bounded by the bounds of the cost function.
+        :return:
         """
         for i in range(2):
             self.position[i] = self.position[i] + self.velocity[i]
