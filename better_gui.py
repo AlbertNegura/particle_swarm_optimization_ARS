@@ -129,6 +129,7 @@ class StartPage(tk.Frame):
         self.function = "rosenbrock" if self.func_var.get()==0 else "rastrigin"
 
     def showFrame(self,parent,controller):
+        PSO.frames[StartPage].first_run = True
         self.update_all()
         controller.show_frame(VisualizationPage)
 
@@ -380,9 +381,9 @@ class VisualizationPage(tk.Frame):
 
     def step(self):
         global data, cost, av_cost, i, ani
+        if ani1 is not None:
+            ani1.event_source.stop()
         if self.first_run:
-            if ani1 is not None:
-                ani1.event_source.stop()
             i=0
             self.first_run = False
             self.ax1.cla()
@@ -427,7 +428,7 @@ class VisualizationPage(tk.Frame):
         else:
             if(i != self.iterations_slider.get()):
                 i = self.iterations_slider.get()
-            if(i >= self.iterations):
+            if(i >= self.iterations-1):
                 i = 0
                 self.iterations_slider.set(0)
             self.iterations_slider_shower.set(int(i))
@@ -448,7 +449,8 @@ class VisualizationPage(tk.Frame):
         self.canvas.draw()
 
     def go_back(self, controller):
-        ani1.event_source.stop()
+        if ani1 is not None:
+            ani1.event_source.stop()
         self.ax1.cla()
         self.ax2.cla()
         self.ax3.cla()
