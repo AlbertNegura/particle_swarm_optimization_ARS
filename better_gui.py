@@ -443,7 +443,7 @@ class VisualizationPage(tk.Frame):
             cont_data, cont_scatters, cont_lines = self.contour_plot_step(data,i)
             surf_data, surf_zs, surf_scatters, surf_lines = self.surface_plot_step(data,i)
             self.cost_plot(cost)
-            self.av_cost_plot(cost)
+            self.av_cost_plot(av_cost)
             i+=1
             self.iterations_slider.set(i)
 
