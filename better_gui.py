@@ -109,7 +109,7 @@ class StartPage(tk.Frame):
         button1.pack()
 
         button2 = ttk.Button(self, text="Reset to Default Values",
-                            command=lambda: self.set_default)
+                            command=lambda: self.set_default())
         button2.pack()
 
         button3 = ttk.Button(self, text="Exit",
@@ -118,6 +118,7 @@ class StartPage(tk.Frame):
 
         self.update_all()
         self.set_default()
+        self.update_idletasks()
 
     def set_neighbourhood(self):
         self.neighbourhood = "global" if self.neigh_var.get()==0 else "social-two"  if self.neigh_var.get()==1 else "social-four" if self.neigh_var.get()==2  else "geographical"
@@ -144,11 +145,13 @@ class StartPage(tk.Frame):
         self.algorithm = "pso" if self.alg_var.get()==0 else "gd"
 
     def set_default(self):
+        self.update_idletasks()
         self.iterations_slider.set(50)
         self.population_slider.set(20)
         self.cognitive_slider.set(2.00)
         self.social_slider.set(2.00)
         self.omega_slider.set(0.90)
+        self.update_idletasks()
 
 class VisualizationPage(tk.Frame):
 
