@@ -393,6 +393,7 @@ class VisualizationPage(tk.Frame):
             self.population = PSO.frames[StartPage].population
             self.iterations = PSO.frames[StartPage].iterations
             self.iterations_slider.configure(to=self.iterations)
+            self.iterations_slider_shower.configure(to=self.iterations)
             self.iterations_slider_shower.set(int(i))
             self.bounds = [-2.4, 2.4] if self.function == "rosenbrock" else [-5.12, 5.12]
             if PSO.frames[StartPage].algorithm == "pso":
