@@ -289,7 +289,7 @@ class VisualizationPage(tk.Frame):
     def cost_plot(self,data):
         self.ax3.set(xlim=[0, data.shape[0]], xlabel='Iterations', ylabel='Best Cost')
         self.ax3.set(ylim=[0, np.max(data)])
-        self.ax3.title.set_text('Min Cost Function')
+        self.ax3.title.set_text('Min Cost Function with Min Cost = {:.3f}'.format((np.min(data))))
         self.ax3.plot(data, lw=3)
 
     def av_cost_plot(self,data):
