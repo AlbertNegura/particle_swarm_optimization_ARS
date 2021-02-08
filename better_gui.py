@@ -413,9 +413,13 @@ class VisualizationPage(tk.Frame):
                 self.text = ("Algorithm: "+ ("Gradient Descent" if PSO.frames[StartPage].algorithm else "Gradient Descent") + " on function: " + PSO.frames[StartPage].function + ".")
                 self.label2.config(text=self.text)
             i+=1
+            self.iterations_slider.set(i)
         else:
             if(i != self.iterations_slider.get()):
                 i = self.iterations_slider.get()
+            if(i >= self.iterations):
+                i = 0
+                self.iterations_slider.set(0)
             self.ax1.cla()
             self.ax2.cla()
             self.ax3.cla()
@@ -425,8 +429,7 @@ class VisualizationPage(tk.Frame):
             self.cost_plot(cost)
             self.av_cost_plot(cost)
             i+=1
-            if(i >= self.iterations):
-                i = 0
+            self.iterations_slider.set(i)
 
         self.refresh()
         self.update_idletasks()
