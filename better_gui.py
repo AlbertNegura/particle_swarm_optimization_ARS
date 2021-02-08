@@ -359,6 +359,7 @@ class VisualizationPage(tk.Frame):
             self.av_cost_plot(cost)
         elif PSO.frames[StartPage].algorithm == "gd":
             data2, cost2 = gradient_descent.gradient_descent(function=self.function)
+            data2 = np.array(data2)
             cont_data, cont_scatters, cont_lines = self.contour_plot(data2)
             surf_data, surf_zs, surf_scatters, surf_lines = self.surface_plot(data2)
             self.cost_plot(cost2)
