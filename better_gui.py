@@ -235,7 +235,6 @@ class VisualizationPage(tk.Frame):
         self.ax1.contourf(X, Y, Z, levels=250, cmap='viridis',alpha=0.3)
         self.ax1.scatter(0,0, c="white",marker="*", edgecolors="black", s=250)
         self.ax1.title.set_text("2D Contour Plot of Objective Function")
-
         xs = data[time, :, 0]
         ys = data[time, :, 1]
         scatters = self.ax1.scatter(xs, ys, c="red", marker="o", vmin=0, vmax=data.shape[1], edgecolors="Black")
@@ -412,10 +411,13 @@ class VisualizationPage(tk.Frame):
                 self.av_cost_plot(cost)
             elif PSO.frames[StartPage].algorithm == "gd":
                 data, cost = gradient_descent.gradient_descent(function=self.function)
+                data = np.array(data)
                 cont_data, cont_scatters, cont_lines = self.contour_plot_step(data,i)
                 surf_data, surf_zs, surf_scatters, surf_lines = self.surface_plot_step(data,i)
                 self.cost_plot(cost)
             else: #default to PSO
+                data, cost, av_cost = particle_swarm_optimization.pso(population=PSO.frames[StartPage].population, iterations=PSO.frames[StartPage].iterations, function=self.function, optimize_a=False, a=PSO.frames[StartPage].omega, b=PSO.frames[StartPage].social, c=PSO.frames[StartPage].cognitive)
+                data = np.array(data)
                 cont_data, cont_scatters, cont_lines = self.contour_plot_step(data,i)
                 surf_data, surf_zs, surf_scatters, surf_lines = self.surface_plot_step(data,i)
                 self.cost_plot(cost)
