@@ -1,5 +1,3 @@
-import math
-
 import matplotlib
 matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -196,7 +194,7 @@ class VisualizationPage(tk.Frame):
 
     def function_of(self, x, y, a=0, b=1, A=10, dimensions=2):
         if self.function == "rastrigin":  # rastrigin
-            return A * dimensions + (x ** 2 - A * np.cos(math.pi * 2 * x)) + (y ** 2 - A * np.cos(math.pi * 2 * y))
+            return A * dimensions + (x ** 2 - A * np.cos(np.pi * 2 * x)) + (y ** 2 - A * np.cos(np.pi * 2 * y))
         elif self.function == "rosenbrock":  # rosenbrock a=0,b=1
             return b * (y - x ** 2) ** 2 + (0 - x) ** 2
 

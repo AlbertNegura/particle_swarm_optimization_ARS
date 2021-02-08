@@ -1,5 +1,4 @@
 import numpy as np
-import math
 
 def gradient_descent(function = "rosenbrock", iterations = 50):
     
@@ -40,7 +39,7 @@ def evaluate(function, position):
         y = position[1]
 
         if function == "rastrigin":  # rastrigin
-            return A * dimensions + (x ** 2 - A * np.cos(math.pi * 2 * x)) + (y ** 2 - A * np.cos(math.pi * 2 * y))
+            return A * dimensions + (x ** 2 - A * np.cos(np.pi * 2 * x)) + (y ** 2 - A * np.cos(np.pi * 2 * y))
         elif function == "rosenbrock":  # rosenbrock a=0,b=1
             return b*(y - x ** 2) ** 2 + (a-x) ** 2
 
@@ -49,8 +48,8 @@ def step(function, position,learning_rate):
         y = position[1]
 
         if function == "rastrigin":
-            dx = 2*(x + 10*math.pi*np.sin(2*math.pi*x))
-            dy = 2*(y + 10*math.pi*np.sin(2*math.pi*y))
+            dx = 2*(x + 10*np.pi*np.sin(2*np.pi*x))
+            dy = 2*(y + 10*np.pi*np.sin(2*np.pi*y))
             
         if function == "rosenbrock":
             dx = 2*(2*(x**3) - 2*x*y + x)

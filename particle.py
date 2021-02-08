@@ -1,5 +1,4 @@
 import numpy as np
-import math
 
 class Particle:
     position = []
@@ -51,7 +50,7 @@ class Particle:
         y = self.position[1]
 
         if function == "rastrigin":  # rastrigin
-            self.cost = A * dimensions + (x ** 2 - A * np.cos(math.pi * 2 * x)) + (y ** 2 - A * np.cos(math.pi * 2 * y))
+            self.cost = A * dimensions + (x ** 2 - A * np.cos(np.pi * 2 * x)) + (y ** 2 - A * np.cos(np.pi * 2 * y))
         elif function == "rosenbrock":  # rosenbrock a=0,b=1
             self.cost = b*(y - x ** 2) ** 2 + (a-x) ** 2
         if self.cost < self.best_minimum_cost:
