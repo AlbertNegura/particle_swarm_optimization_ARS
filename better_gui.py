@@ -1,3 +1,10 @@
+"""Particle Swarm Optimization GUI
+
+Authors:
+Julien Havel
+Albert Negura
+Sergi Nogues Farres
+"""
 import matplotlib
 matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -14,10 +21,13 @@ import particle_swarm_optimization
 import gradient_descent
 
 LARGE_FONT= ("Verdana", 12)
-style.use("seaborn-muted")
+style.use("seaborn-muted") #best looking graph style
 ani1 = None
 
 class PSO(tk.Tk):
+    """
+    Initial Setup of all GUI frames and container.
+    """
     frames = {}
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
@@ -30,6 +40,7 @@ class PSO(tk.Tk):
 
         f = 0
 
+        # initialize two frames
         for F in (StartPage, VisualizationPage):
             if f == 0:
                 frame = F(container, self)
@@ -44,11 +55,18 @@ class PSO(tk.Tk):
         self.show_frame(StartPage)
 
     def show_frame(self, cont):
+        """
+        Switch frame to corresponding frame.
+        :param cont: Frame to switch to.
+        """
         frame = self.frames[cont]
         frame.tkraise()
 
 
 class StartPage(tk.Frame):
+    """
+    Main menu with corresponding adjustable sliders.
+    """
     omega = 0.9
     def __init__(self, parent, controller):
         tk.Frame.__init__(self,parent)
@@ -116,20 +134,35 @@ class StartPage(tk.Frame):
         self.update_idletasks()
 
     def set_neighbourhood(self):
+        """
+        Sets the neighbourhood based on radio buttons.
+        """
         self.neighbourhood = "global" if self.neigh_var.get()==0 else "social-two"  if self.neigh_var.get()==1 else "social-four" if self.neigh_var.get()==2  else "geographical"
 
     def set_algo(self):
+        """
+        Sets the algorithm based on radio buttons.
+        """
         self.algorithm = "pso" if self.alg_var.get()==0 else "gd"
 
     def set_func(self):
+        """
+        Sets the function based on radio buttons.
+        """
         self.function = "rosenbrock" if self.func_var.get()==0 else "rastrigin"
 
     def showFrame(self,parent,controller):
+        """
+        Shows the visualization frame and sets the step first run to true while updating all values.
+        """
         PSO.frames[StartPage].first_run = True
         self.update_all()
         controller.show_frame(VisualizationPage)
 
     def update_all(self):
+        """
+        Update all values from the corresponding radio buttons / sliders.
+        """
         self.omega = self.omega_slider.get()
         self.social = self.social_slider.get()
         self.cognitive = self.cognitive_slider.get()
@@ -140,6 +173,9 @@ class StartPage(tk.Frame):
         self.algorithm = "pso" if self.alg_var.get()==0 else "gd"
 
     def set_default(self):
+        """
+        Resets all sliders to default values.
+        """
         self.update_idletasks()
         self.iterations_slider.set(50)
         self.population_slider.set(20)
@@ -149,6 +185,9 @@ class StartPage(tk.Frame):
         self.update_idletasks()
 
 class VisualizationPage(tk.Frame):
+    """
+    Visualization frame with matplotlib plots.
+    """
 
     def __init__(self, parent, controller, home):
         self.controller = controller
@@ -159,7 +198,7 @@ class VisualizationPage(tk.Frame):
         button1 = ttk.Button(self, text="Back to Home",
                             command=lambda: self.go_back(controller))
         button1.pack()
-
+        #2 by 2 plot - contour, surface, min cost, avg cost
         self.figure = Figure(figsize=(10,7), dpi=100)
         self.ax1=self.figure.add_subplot(221)
         self.ax2=self.figure.add_subplot(222, projection="3d")
@@ -175,9 +214,11 @@ class VisualizationPage(tk.Frame):
         button3 = ttk.Button(self, text="Step",
                             command=lambda: self.step())
         button3.pack()
+
+        # human-adjustable slider for selected iteration
         self.iterations_slider = tk.Scale(self, from_=0, to=PSO.frames[StartPage].iterations, length=600,tickinterval=int(PSO.frames[StartPage].iterations/10), orient=HORIZONTAL, label="Next Time Step")
         self.iterations_slider.pack()
-        self.first_run = True
+        self.first_run = True # first run of the step function
         self.minimum = [0,0]
         if PSO.frames[StartPage].algorithm == "pso":
             self.text = ("Algorithm: "+ ("Particle Swarm Optimization" if PSO.frames[StartPage].algorithm else "Gradient Descent") + " on function: " + PSO.frames[StartPage].function + "."+"\nPopulation="+str(PSO.frames[StartPage].population)+";iterations="+str(PSO.frames[StartPage].iterations)+"\nomega="+str(PSO.frames[StartPage].omega)+" social constant="+str(PSO.frames[StartPage].social)+" cognitive constant="+str(PSO.frames[StartPage].cognitive))
@@ -188,32 +229,49 @@ class VisualizationPage(tk.Frame):
         self.label2.pack()
 
         self.canvas.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=False)
+        # automatic slider showing current iteration - does not actually "do" anything
         self.iterations_slider_shower = tk.Scale(self, from_=0, to=PSO.frames[StartPage].iterations, length=600,tickinterval=int(PSO.frames[StartPage].iterations/10), orient=HORIZONTAL, label="Current Time Step (non-interactable slider)")
         self.iterations_slider_shower.pack()
 
 
     def function_of(self, x, y, a=0, b=1, A=10, dimensions=2):
+        """
+        :param x: (list) x-axis values of the particles
+        :param y: (list) x-axis values of the particles
+        :param b: (int, optional) Rosenbrock function x-y component
+        :param a: (int, optional) Rosenbrock function a component (defined minimum area)
+        :param A: (int, optional) Rastrigin function constant
+        :param dimensions: (int, optional) Number of dimensions (options: 2)
+        :return: The cost of the particles based on the given positions
+        """
         if self.function == "rastrigin":  # rastrigin
             return A * dimensions + (x ** 2 - A * np.cos(np.pi * 2 * x)) + (y ** 2 - A * np.cos(np.pi * 2 * y))
         elif self.function == "rosenbrock":  # rosenbrock a=0,b=1
             return b * (y - x ** 2) ** 2 + (0 - x) ** 2
 
     def contour_plot(self, data):
+        """
+        Generate contour plot based on the given data.
+        :param data: data from which to generate contour plot
+        """
         x = np.arange(np.min(self.bounds), np.max(self.bounds) + 0.05, 0.05)
         y = np.arange(np.min(self.bounds), np.max(self.bounds) + 0.05, 0.05)
-        X, Y = np.meshgrid(x, y)
-        zs = np.array(self.function_of(np.ravel(X), np.ravel(Y)))
+        X, Y = np.meshgrid(x, y) # meshgrid between bounds for contour
+        zs = np.array(self.function_of(np.ravel(X), np.ravel(Y))) # calculate function over meshgrid
         Z = zs.reshape(X.shape)
         levels = 50
-        if self.function == "rastrigin":
+        if self.function == "rastrigin": # rastrigin is very slow with too many levels, so manually reduce levels
             levels=10
         self.ax1.contourf(X, Y, Z, levels=levels, cmap='viridis',alpha=0.3)
-        self.ax1.scatter(0,0, c="white",marker="*", edgecolors="black", s=250)
+        self.ax1.scatter(0,0, c="white",marker="*", edgecolors="black", s=250) # denote the minimum
         self.ax1.title.set_text("2D Contour Plot of Objective Function")
 
+        # plot the particles
         xs = data[:, :, 0]
         ys = data[:, :, 1]
         scatters = self.ax1.scatter(xs[0], ys[0], c="red", marker="o", vmin=0, vmax=data.shape[1], edgecolors="Black")
+
+        # plot particle "trails" for better visualization
         lines = []
         for i in range(data.shape[1]):
             line = self.ax1.plot(xs[0, i], ys[0, i], c="Black", alpha=0.6)
@@ -221,22 +279,31 @@ class VisualizationPage(tk.Frame):
         return data, scatters, lines
 
     def contour_plot_step(self, data, time):
+        """
+        Generate contour plot based on the given data in a step-by-step fashion.
+        :param data: data from which to generate contour plot
+        :param time: time step for which to plot the data
+        """
         x = np.arange(np.min(self.bounds), np.max(self.bounds) + 0.05, 0.05)
         y = np.arange(np.min(self.bounds), np.max(self.bounds) + 0.05, 0.05)
-        X, Y = np.meshgrid(x, y)
-        zs = np.array(self.function_of(np.ravel(X), np.ravel(Y)))
+        X, Y = np.meshgrid(x, y) # meshgrid between bounds for contour
+        zs = np.array(self.function_of(np.ravel(X), np.ravel(Y))) # calculate function over meshgrid
         Z = zs.reshape(X.shape)
 
         levels = 50
-        if self.function == "rastrigin":
+        if self.function == "rastrigin": # rastrigin is very slow with too many levels, so manually reduce levels
             levels=10
 
         self.ax1.contourf(X, Y, Z, levels=levels, cmap='viridis',alpha=0.3)
-        self.ax1.scatter(0,0, c="white",marker="*", edgecolors="black", s=250)
+        self.ax1.scatter(0,0, c="white",marker="*", edgecolors="black", s=250) # denote the minimum
         self.ax1.title.set_text("2D Contour Plot of Objective Function")
+
+        # plot the particles at the given time step
         xs = data[time, :, 0]
         ys = data[time, :, 1]
         scatters = self.ax1.scatter(xs, ys, c="red", marker="o", vmin=0, vmax=data.shape[1], edgecolors="Black")
+
+        # plot particle "trails" for better visualization
         lines = []
         for i in range(data.shape[1]):
             line = self.ax1.plot(data[:time, i,0], data[:time, i,1], alpha=0.6)
@@ -245,26 +312,34 @@ class VisualizationPage(tk.Frame):
 
 
     def surface_plot(self,data):
+        """
+        Generate surface plot based on the given data.
+        :param data: data from which to generate surface plot
+        """
         x = np.arange(np.min(self.bounds), np.max(self.bounds) + 0.05, 0.05)
         y = np.arange(np.min(self.bounds), np.max(self.bounds) + 0.05, 0.05)
-        X, Y = np.meshgrid(x, y)
-        zs = np.array(self.function_of(np.float32(np.ravel(X)), np.float32(np.ravel(Y))))
+        X, Y = np.meshgrid(x, y) # meshgrid between bounds for contour
+        zs = np.array(self.function_of(np.float32(np.ravel(X)), np.float32(np.ravel(Y)))) # calculate function over meshgrid
         Z = zs.reshape(X.shape)
-        if self.function == "rastrigin":
+        # different plots for different functions to "improve" visualization
+        if self.function == "rastrigin": # I tried - best I could do
             self.ax2.plot_wireframe(X, Y, Z, cmap="viridis", alpha=0.15, rstride=10, cstride=10)
             self.ax2.contour(X, Y, Z, cmap="viridis", alpha=0.25, levels=10)
         else:
             self.ax2.plot_wireframe(X, Y, Z, cmap="viridis", alpha=0.65, rstride=10, cstride=10)
             self.ax2.contour(X, Y, Z, cmap="viridis", alpha=0.55, levels=50)
+        # change initial camera angle
         self.ax2.view_init(elev=66., azim=50)
-        self.ax2.scatter(0,0,0, c="white",marker="*", edgecolors="black", s=250)
+        self.ax2.scatter(0,0,0, c="white",marker="*", edgecolors="black", s=250) # denote the minimum
         # ax.contour3D(X, Y, Z, 50, cmap='gray', linestyles="solid")
         self.ax2.title.set_text("3D Plot of Objective Function")
 
+        # plot the particles
         xs = data[:, :, 0]
         ys = data[:, :, 1]
         zzs = self.function_of(xs, ys, self.function)
         scatters = self.ax2.scatter(xs[0], ys[0], zzs[0]+0.1, s=4, c="red", marker="o", vmin=0, vmax=data.shape[1], edgecolors="Black")
+        # 3d trails
         lines = []
         for i in range(data.shape[1]):
             line = self.ax2.plot(xs[0, i], ys[0, i], zzs[0, i], c="red", alpha=0.3)
@@ -272,6 +347,11 @@ class VisualizationPage(tk.Frame):
         return data, zzs, scatters, lines
 
     def surface_plot_step(self,data, time):
+        """
+        Generate surface plot based on the given data in a step-by-step fashion.
+        :param data: data from which to generate surface plot
+        :param time: time step for which to plot the data
+        """
         x = np.arange(np.min(self.bounds), np.max(self.bounds) + 0.05, 0.05)
         y = np.arange(np.min(self.bounds), np.max(self.bounds) + 0.05, 0.05)
         X, Y = np.meshgrid(x, y)
@@ -284,10 +364,11 @@ class VisualizationPage(tk.Frame):
             self.ax2.plot_wireframe(X, Y, Z, cmap="viridis", alpha=0.65, rstride=10, cstride=10)
             self.ax2.contour(X, Y, Z, cmap="viridis", alpha=0.55, levels=50)
         self.ax2.view_init(elev=66., azim=50)
-        self.ax2.scatter(0,0,0, c="white",marker="*", edgecolors="black", s=250)
+        self.ax2.scatter(0,0,0, c="white",marker="*", edgecolors="black", s=250) # denote the minimum
         # ax.contour3D(X, Y, Z, 50, cmap='gray', linestyles="solid")
         self.ax2.title.set_text("3D Plot of Objective Function")
 
+        # plot the particles at the given time step
         xs = data[time, :, 0]
         ys = data[time, :, 1]
         zzs = self.function_of(xs, ys, self.function)
@@ -296,6 +377,10 @@ class VisualizationPage(tk.Frame):
         return data, zzs, scatters, lines
 
     def cost_plot(self,data):
+        """
+        Generate min cost plot based on given data.
+        :param data: data from which to generate the plot
+        """
         self.ax3.set(xlim=[0, data.shape[0]], xlabel='Iterations', ylabel='Best Cost')
         self.ax3.set(ylim=[0, np.max(data)])
         self.ax3.title.set_text('Min Cost Function with Min Cost = {:.3f}'.format((np.min(data))))
@@ -306,15 +391,32 @@ class VisualizationPage(tk.Frame):
         self.ax3.text(np.argmin(data), .5, " "+ str(np.argmin(data)), transform=trans)
 
     def av_cost_plot(self,data):
+        """
+        Generate average cost plot based on given data.
+        :param data: data from which to generate the plot
+        """
         self.ax4.set(xlim=[0, data.shape[0]], xlabel='Iterations', ylabel='Best Cost')
         self.ax4.set(ylim=[0, np.max(data)])
         self.ax4.title.set_text('Average Cost Function')
         self.ax4.plot(data, lw=3)
 
     def animate(self, i, data, scatters, lines, surf_data, surf_zs, surf_scatters, surf_lines, algorithm):
+        """
+        Animate both the contour and the surface plots.
+        :param i: animation time step
+        :param data: data for contour plot
+        :param scatters: scatterplot reference for contour plot
+        :param lines: trailing lines reference for contour plot
+        :param surf_data: data for surface plot
+        :param surf_zs: z values for surface plot
+        :param surf_scatters: scatterplot reference for surface plot
+        :param surf_lines: trailing lines reference for surface plot
+        :param algorithm: selected algorithm (depracated)
+        """
         self.iterations_slider_shower.set(int(i))
         plot_data = data[i, :, :2]
         scatters.set_offsets(plot_data)
+        #update trailing lines based on animation iteration
         if i > 0:
             for lnum, line in enumerate(lines):
                 if i == 2:
@@ -333,6 +435,7 @@ class VisualizationPage(tk.Frame):
         plot_data_y = surf_data[i, :, 1]
         plot_data_z = surf_zs[i]
         surf_scatters._offsets3d = (plot_data_x, plot_data_y, plot_data_z + 0.1)
+        #update trailing lines based on animation iteration
         if i > 0:
             for lnum, line in enumerate(surf_lines):
                 if i == 2:
@@ -349,6 +452,9 @@ class VisualizationPage(tk.Frame):
                     line[0].set_data(xs[:, 0], xs[:, 1])
 
     def execute(self):
+        """
+        Executes the PSO/GD algorithm with the selected parameters and animates them.
+        """
         global ani1
         if ani1 is not None:
             ani1.event_source.stop()
@@ -397,6 +503,9 @@ class VisualizationPage(tk.Frame):
         self.update_idletasks()
 
     def step(self):
+        """
+        Step-by-step simulation of PSO/GD based on the selected parameters. Press multiple times to advance.
+        """
         global data, cost, av_cost, i, ani
         if ani1 is not None:
             ani1.event_source.stop()
@@ -445,13 +554,14 @@ class VisualizationPage(tk.Frame):
                 self.label2.config(text=self.text)
             i+=1
             self.iterations_slider.set(i)
-        else:
+        else: # if in the middle of simulation, update everything corresponding to the slider time step
             if(i != self.iterations_slider.get()):
                 i = self.iterations_slider.get()
             if(i >= self.iterations-1):
                 i = 0
                 self.iterations_slider.set(0)
             self.iterations_slider_shower.set(int(i))
+            # clear axes and regenerate plots
             self.ax1.cla()
             self.ax2.cla()
             self.ax3.cla()
@@ -460,21 +570,32 @@ class VisualizationPage(tk.Frame):
             surf_data, surf_zs, surf_scatters, surf_lines = self.surface_plot_step(data,i)
             self.cost_plot(cost)
             self.av_cost_plot(av_cost)
+            # automatically increase time step
             i+=1
             self.iterations_slider.set(i)
-
+        # update the sliders
         self.refresh()
         self.update_idletasks()
+
     def refresh(self):
+        """
+        Refresh the current canvas with the plots
+        """
         self.canvas.draw()
 
     def go_back(self, controller):
+        """
+        Return to the Start Page to change parameters.
+        """
+        # stop animation if running
         if ani1 is not None:
             ani1.event_source.stop()
+        # clear axes
         self.ax1.cla()
         self.ax2.cla()
         self.ax3.cla()
         self.ax4.cla()
+        # change frame
         controller.show_frame(StartPage)
 
 
