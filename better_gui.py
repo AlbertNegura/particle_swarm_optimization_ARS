@@ -176,6 +176,8 @@ class VisualizationPage(tk.Frame):
         button3 = ttk.Button(self, text="Step",
                             command=lambda: self.step())
         button3.pack()
+        self.iterations_slider = tk.Scale(self, from_=0, to=PSO.frames[StartPage].iterations, length=600,tickinterval=int(PSO.frames[StartPage].iterations/10), orient=HORIZONTAL, label="Time step")
+        self.iterations_slider.pack()
         self.first_run = True
         self.minimum = [0,0]
         if PSO.frames[StartPage].algorithm == "pso":
@@ -384,6 +386,7 @@ class VisualizationPage(tk.Frame):
             self.function = PSO.frames[StartPage].function
             self.population = PSO.frames[StartPage].population
             self.iterations = PSO.frames[StartPage].iterations
+            self.iterations_slider.configure(to=self.iterations)
             self.bounds = [-2.4, 2.4] if self.function == "rosenbrock" else [-5.12, 5.12]
             if PSO.frames[StartPage].algorithm == "pso":
                 data, cost, av_cost = particle_swarm_optimization.pso(population=PSO.frames[StartPage].population, iterations=PSO.frames[StartPage].iterations, function=self.function, optimize_a=False, a=PSO.frames[StartPage].omega, b=PSO.frames[StartPage].social, c=PSO.frames[StartPage].cognitive)
@@ -411,6 +414,8 @@ class VisualizationPage(tk.Frame):
                 self.label2.config(text=self.text)
             i+=1
         else:
+            if(i != self.iterations_slider.get()):
+                i = self.iterations_slider.get()
             self.ax1.cla()
             self.ax2.cla()
             self.ax3.cla()
@@ -420,6 +425,8 @@ class VisualizationPage(tk.Frame):
             self.cost_plot(cost)
             self.av_cost_plot(cost)
             i+=1
+            if(i >= self.iterations):
+                i = 0
 
         self.refresh()
         self.update_idletasks()
