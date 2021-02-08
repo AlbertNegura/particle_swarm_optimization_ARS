@@ -56,8 +56,8 @@ class Particle:
             self.best_minimum_position = self.position
 
     def update_velocity(self, a, b, c, pos_best_cost, swarm):
-        r1 = np.random.uniform(size=(2))
-        r2 = np.random.uniform(size=(2))
+        r1 = np.random.uniform(low=0., high=1.0, size=(2))
+        r2 = np.random.uniform(low=0., high=1.0, size=(2))
         if len(self.neighbourhood) == 1: # global
             for i in range(2):
                 self.velocity[i] = a*self.velocity[i] + c*r1[i]*(self.best_minimum_position[i]-self.position[i]) + b*r2[i]*(pos_best_cost[i]-self.position[i])

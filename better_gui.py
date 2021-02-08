@@ -356,7 +356,7 @@ class VisualizationPage(tk.Frame):
             cont_data, cont_scatters, cont_lines = self.contour_plot(data)
             surf_data, surf_zs, surf_scatters, surf_lines = self.surface_plot(data)
             self.cost_plot(cost)
-            self.av_cost_plot(cost)
+            self.av_cost_plot(av_cost)
         elif PSO.frames[StartPage].algorithm == "gd":
             data2, cost2 = gradient_descent.gradient_descent(function=self.function)
             data2 = np.array(data2)
@@ -367,7 +367,7 @@ class VisualizationPage(tk.Frame):
             cont_data, cont_scatters, cont_lines = self.contour_plot(data)
             surf_data, surf_zs, surf_scatters, surf_lines = self.surface_plot(data)
             self.cost_plot(cost)
-            self.av_cost_plot(cost)
+            self.av_cost_plot(av_cost)
 
         ani1 = animation.FuncAnimation(self.figure, self.animate, frames=self.iterations,
                                            fargs=[cont_data, cont_scatters, cont_lines, surf_data, surf_zs, surf_scatters, surf_lines, PSO.frames[StartPage].algorithm], interval=10,
@@ -409,7 +409,7 @@ class VisualizationPage(tk.Frame):
                 cont_data, cont_scatters, cont_lines = self.contour_plot_step(data,i)
                 surf_data, surf_zs, surf_scatters, surf_lines = self.surface_plot_step(data,i)
                 self.cost_plot(cost)
-                self.av_cost_plot(cost)
+                self.av_cost_plot(av_cost)
             elif PSO.frames[StartPage].algorithm == "gd":
                 data, cost = gradient_descent.gradient_descent(function=self.function)
                 data = np.array(data)
@@ -422,7 +422,7 @@ class VisualizationPage(tk.Frame):
                 cont_data, cont_scatters, cont_lines = self.contour_plot_step(data,i)
                 surf_data, surf_zs, surf_scatters, surf_lines = self.surface_plot_step(data,i)
                 self.cost_plot(cost)
-                self.av_cost_plot(cost)
+                self.av_cost_plot(av_cost)
 
             if PSO.frames[StartPage].algorithm == "pso":
                 self.text = ("Algorithm: "+ ("Particle Swarm Optimization" if PSO.frames[StartPage].algorithm else "Gradient Descent") + " on function: " + PSO.frames[StartPage].function + "."+"\nPopulation="+str(PSO.frames[StartPage].population)+";iterations="+str(PSO.frames[StartPage].iterations)+"\nomega="+str(PSO.frames[StartPage].omega)+" social constant="+str(PSO.frames[StartPage].social)+" cognitive constant="+str(PSO.frames[StartPage].cognitive))
