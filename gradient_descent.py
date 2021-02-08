@@ -1,7 +1,5 @@
 import numpy as np
-import random
 import math
-import generate_plots as plots
 
 def gradient_descent(function = "rosenbrock", iterations = 50):
     
