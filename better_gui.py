@@ -294,7 +294,6 @@ class VisualizationPage(tk.Frame):
         self.ax4.plot(data, lw=3)
 
     def animate(self, i, data, scatters, lines, surf_data, surf_zs, surf_scatters, surf_lines, algorithm):
-        self.iterations_slider.set(int(i))
         plot_data = data[i, :, :2]
         scatters.set_offsets(plot_data)
         if i > 0:
