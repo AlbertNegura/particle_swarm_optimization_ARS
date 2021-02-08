@@ -266,7 +266,7 @@ class VisualizationPage(tk.Frame):
         xs = data[:, :, 0]
         ys = data[:, :, 1]
         zzs = self.function_of(xs, ys, self.function)
-        scatters = self.ax2.scatter(xs[0], ys[0], zzs[0]+0.01, s=4, c="red", marker="o", vmin=0, vmax=data.shape[1], edgecolors="Black")
+        scatters = self.ax2.scatter(xs[0], ys[0], zzs[0]+0.1, s=4, c="red", marker="o", vmin=0, vmax=data.shape[1], edgecolors="Black")
         lines = []
         for i in range(data.shape[1]):
             line = self.ax2.plot(xs[0, i], ys[0, i], zzs[0, i], c="red", alpha=0.3)
@@ -279,7 +279,12 @@ class VisualizationPage(tk.Frame):
         X, Y = np.meshgrid(x, y)
         zs = np.array(self.function_of(np.float32(np.ravel(X)), np.float32(np.ravel(Y))))
         Z = zs.reshape(X.shape)
-        self.ax2.plot_wireframe(X, Y, Z, cmap="viridis", alpha=0.25, rstride=10, cstride=10)
+        if self.function == "rastrigin":
+            self.ax2.plot_wireframe(X, Y, Z, cmap="viridis", alpha=0.15, rstride=10, cstride=10)
+            self.ax2.contour(X, Y, Z, cmap="viridis", alpha=0.25, levels=10)
+        else:
+            self.ax2.plot_wireframe(X, Y, Z, cmap="viridis", alpha=0.65, rstride=10, cstride=10)
+            self.ax2.contour(X, Y, Z, cmap="viridis", alpha=0.55, levels=50)
         self.ax2.view_init(elev=66., azim=50)
         self.ax2.scatter(0,0,0, c="white",marker="*", edgecolors="black", s=250)
         # ax.contour3D(X, Y, Z, 50, cmap='gray', linestyles="solid")
@@ -288,7 +293,7 @@ class VisualizationPage(tk.Frame):
         xs = data[time, :, 0]
         ys = data[time, :, 1]
         zzs = self.function_of(xs, ys, self.function)
-        scatters = self.ax2.scatter(xs, ys, zzs+0.01, s=4, c="red", marker="o", vmin=0, vmax=data.shape[1], edgecolors="Black")
+        scatters = self.ax2.scatter(xs, ys, zzs+0.1, s=4, c="red", marker="o", vmin=0, vmax=data.shape[1], edgecolors="Black")
         lines = []
         return data, zzs, scatters, lines
 
