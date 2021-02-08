@@ -162,7 +162,7 @@ class VisualizationPage(tk.Frame):
                             command=lambda: self.go_back(controller))
         button1.pack()
 
-        self.figure = Figure(figsize=(10,6), dpi=100)
+        self.figure = Figure(figsize=(6,6), dpi=100)
         self.ax1=self.figure.add_subplot(221)
         self.ax2=self.figure.add_subplot(222, projection="3d")
         self.ax3=self.figure.add_subplot(223)
@@ -206,9 +206,10 @@ class VisualizationPage(tk.Frame):
         X, Y = np.meshgrid(x, y)
         zs = np.array(self.function_of(np.ravel(X), np.ravel(Y)))
         Z = zs.reshape(X.shape)
-
-
-        self.ax1.contourf(X, Y, Z, levels=250, cmap='viridis',alpha=0.3)
+        levels = 50
+        if self.function == "rastrigin":
+            levels=10
+        self.ax1.contourf(X, Y, Z, levels=levels, cmap='viridis',alpha=0.3)
         self.ax1.scatter(0,0, c="white",marker="*", edgecolors="black", s=250)
         self.ax1.title.set_text("2D Contour Plot of Objective Function")
 
@@ -228,8 +229,11 @@ class VisualizationPage(tk.Frame):
         zs = np.array(self.function_of(np.ravel(X), np.ravel(Y)))
         Z = zs.reshape(X.shape)
 
+        levels = 50
+        if self.function == "rastrigin":
+            levels=10
 
-        self.ax1.contourf(X, Y, Z, levels=250, cmap='viridis',alpha=0.3)
+        self.ax1.contourf(X, Y, Z, levels=levels, cmap='viridis',alpha=0.3)
         self.ax1.scatter(0,0, c="white",marker="*", edgecolors="black", s=250)
         self.ax1.title.set_text("2D Contour Plot of Objective Function")
         xs = data[time, :, 0]
@@ -248,8 +252,8 @@ class VisualizationPage(tk.Frame):
         X, Y = np.meshgrid(x, y)
         zs = np.array(self.function_of(np.float32(np.ravel(X)), np.float32(np.ravel(Y))))
         Z = zs.reshape(X.shape)
-        self.ax2.plot_surface(X, Y, Z, cmap=cm.nipy_spectral, alpha=0.3)
-        self.ax2.view_init(elev=20., azim=75)
+        self.ax2.plot_surface(X, Y, Z, cmap="viridis", alpha=0.45)
+        self.ax2.view_init(elev=66., azim=50)
         self.ax2.scatter(0,0,0, c="white",marker="*", edgecolors="black", s=250)
         # ax.contour3D(X, Y, Z, 50, cmap='gray', linestyles="solid")
         self.ax2.title.set_text("3D Plot of Objective Function")
@@ -257,7 +261,7 @@ class VisualizationPage(tk.Frame):
         xs = data[:, :, 0]
         ys = data[:, :, 1]
         zzs = self.function_of(xs, ys, self.function)
-        scatters = self.ax2.scatter(xs[0], ys[0], zzs[0]+0.01, c="red", marker="o", vmin=0, vmax=data.shape[1])
+        scatters = self.ax2.scatter(xs[0], ys[0], zzs[0]+0.01, s=4, c="red", marker="o", vmin=0, vmax=data.shape[1], edgecolors="Black")
         lines = []
         for i in range(data.shape[1]):
             line = self.ax2.plot(xs[0, i], ys[0, i], zzs[0, i], c="red", alpha=0.3)
@@ -270,8 +274,8 @@ class VisualizationPage(tk.Frame):
         X, Y = np.meshgrid(x, y)
         zs = np.array(self.function_of(np.float32(np.ravel(X)), np.float32(np.ravel(Y))))
         Z = zs.reshape(X.shape)
-        self.ax2.plot_surface(X, Y, Z, cmap=cm.nipy_spectral, alpha=0.3)
-        self.ax2.view_init(elev=20., azim=75)
+        self.ax2.plot_surface(X, Y, Z, cmap="viridis", alpha=0.15)
+        self.ax2.view_init(elev=66., azim=50)
         self.ax2.scatter(0,0,0, c="white",marker="*", edgecolors="black", s=250)
         # ax.contour3D(X, Y, Z, 50, cmap='gray', linestyles="solid")
         self.ax2.title.set_text("3D Plot of Objective Function")
@@ -279,7 +283,7 @@ class VisualizationPage(tk.Frame):
         xs = data[time, :, 0]
         ys = data[time, :, 1]
         zzs = self.function_of(xs, ys, self.function)
-        scatters = self.ax2.scatter(xs, ys, zzs+0.01, c="red", marker="o", vmin=0, vmax=data.shape[1])
+        scatters = self.ax2.scatter(xs, ys, zzs+0.01, s=4, c="red", marker="o", vmin=0, vmax=data.shape[1], edgecolors="Black")
         lines = []
         return data, zzs, scatters, lines
 
