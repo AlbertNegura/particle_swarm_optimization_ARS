@@ -18,8 +18,6 @@ import gradient_descent
 LARGE_FONT= ("Verdana", 12)
 style.use("seaborn-muted")
 ani1 = None
-s=ttk.Style()
-s.theme_use('clam')
 
 class PSO(tk.Tk):
     frames = {}
