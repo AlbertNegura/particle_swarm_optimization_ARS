@@ -19,6 +19,9 @@ class Particle:
         self.position = position.copy()
         self.upper_bound_vel = np.abs(np.max(self.bounds)-np.min(self.bounds))
         self.lower_bound_vel = -self.upper_bound_vel
+
+        self.upper_bound_vel = 0.1
+        self.lower_bound_vel = -0.1
         self.velocity = self.lower_bound_vel + np.random.rand(2) * (self.upper_bound_vel-self.lower_bound_vel)
         if neighbourhood == "global":
             self.neighbourhood = [id]
