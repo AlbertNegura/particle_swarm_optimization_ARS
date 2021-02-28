@@ -288,6 +288,35 @@ class VisualizationPage(tk.Frame):
             lines.append(line)
         return data, scatters, lines
 
+    def contour_plot_ea(self, data):
+        """
+        Generate contour plot based on the given data.
+        :param data: data from which to generate contour plot
+        """
+        x = np.arange(np.min(self.bounds), np.max(self.bounds) + 0.05, 0.05)
+        y = np.arange(np.min(self.bounds), np.max(self.bounds) + 0.05, 0.05)
+        X, Y = np.meshgrid(x, y) # meshgrid between bounds for contour
+        zs = np.array(self.function_of(np.ravel(X), np.ravel(Y))) # calculate function over meshgrid
+        Z = zs.reshape(X.shape)
+        levels = 50
+        if self.function == "rastrigin": # rastrigin is very slow with too many levels, so manually reduce levels
+            levels=10
+        self.ax1.contourf(X, Y, Z, levels=levels, cmap='viridis',alpha=0.3)
+        self.ax1.scatter(0,0, c="white",marker="*", edgecolors="black", s=250) # denote the minimum
+        self.ax1.title.set_text("2D Contour Plot of Objective Function")
+
+        # plot the particles
+        xs = data[:, :, 0]
+        ys = data[:, :, 1]
+        scatters = self.ax1.scatter(xs[0], ys[0], c="red", marker="o", vmin=0, vmax=data.shape[1], edgecolors="Black")
+
+        # plot particle "trails" for better visualization
+        lines = []
+        for i in range(data.shape[1]):
+            line = self.ax1.plot(xs[0, i], ys[0, i], c="Black", alpha=0.6)
+            lines.append(line)
+        return data, scatters, lines
+
     def contour_plot_step(self, data, time):
         """
         Generate contour plot based on the given data in a step-by-step fashion.
@@ -320,6 +349,37 @@ class VisualizationPage(tk.Frame):
             lines.append(line)
         return data, scatters, lines
 
+    def contour_plot_ea_step(self, data, time):
+        """
+        Generate contour plot based on the given data in a step-by-step fashion.
+        :param data: data from which to generate contour plot
+        :param time: time step for which to plot the data
+        """
+        x = np.arange(np.min(self.bounds), np.max(self.bounds) + 0.05, 0.05)
+        y = np.arange(np.min(self.bounds), np.max(self.bounds) + 0.05, 0.05)
+        X, Y = np.meshgrid(x, y) # meshgrid between bounds for contour
+        zs = np.array(self.function_of(np.ravel(X), np.ravel(Y))) # calculate function over meshgrid
+        Z = zs.reshape(X.shape)
+
+        levels = 50
+        if self.function == "rastrigin": # rastrigin is very slow with too many levels, so manually reduce levels
+            levels=10
+
+        self.ax1.contourf(X, Y, Z, levels=levels, cmap='viridis',alpha=0.3)
+        self.ax1.scatter(0,0, c="white",marker="*", edgecolors="black", s=250) # denote the minimum
+        self.ax1.title.set_text("2D Contour Plot of Objective Function")
+
+        # plot the particles at the given time step
+        xs = data[time, :, 0]
+        ys = data[time, :, 1]
+        scatters = self.ax1.scatter(xs, ys, c="red", marker="o", vmin=0, vmax=data.shape[1], edgecolors="Black")
+
+        # plot particle "trails" for better visualization
+        lines = []
+        for i in range(data.shape[1]):
+            line = self.ax1.plot(data[:time, i,0], data[:time, i,1], alpha=0.6)
+            lines.append(line)
+        return data, scatters, lines
 
     def surface_plot(self,data):
         """
