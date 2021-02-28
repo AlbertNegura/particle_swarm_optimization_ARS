@@ -47,11 +47,11 @@ def differential_evolution(crossover = 0.9, differential_weight = 0.8, populatio
     end = False
     iteration = 0
     best_fitness = None
-    agents_history = []
-    iteration_history = []
+    agents_history = np.zeros((len(agents),max_iterations,1,2))
+    iteration_history = np.array([])
     while not end:
 
-        for x in range(len(agents)-1):
+        for x in range(len(agents)):
             new_agent = [0 for _ in range(dimensions)]
             iteration_history = []
             temp = []
@@ -76,7 +76,7 @@ def differential_evolution(crossover = 0.9, differential_weight = 0.8, populatio
 
             iteration_history.append(new_agent)
 
-        agents_history.append(iteration_history)
+            agents_history[x] = iteration_history
 
         iteration += 1
         if (max_iterations != None) and (max_iterations == iteration):
