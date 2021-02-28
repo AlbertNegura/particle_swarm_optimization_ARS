@@ -103,6 +103,8 @@ class StartPage(tk.Frame):
         self.algorithm_radio1.pack()
         self.algorithm_radio2 = ttk.Radiobutton(self, text="Gradient Descent (note that sliders don't do anything)", variable=self.alg_var, value=1, command=self.set_algo)
         self.algorithm_radio2.pack()
+        self.algorithm_radio3 = ttk.Radiobutton(self, text="Evolutionary Algorithm (note that sliders don't do anything)", variable=self.alg_var, value=2, command=self.set_algo)
+        self.algorithm_radio3.pack()
 
         label4 = ttk.Label(self, text=("""Select neighbourhood behaviour for PSO."""), font=LARGE_FONT)
         label4.pack(pady=10,padx=10)
@@ -170,7 +172,7 @@ class StartPage(tk.Frame):
         self.iterations = self.iterations_slider.get()
         self.neighbourhood = "global" if self.neigh_var.get()==0 else "social-two"  if self.neigh_var.get()==1 else "social-four" if self.neigh_var.get()==2  else "geographical"
         self.function = "rosenbrock" if self.func_var.get()==0 else "rastrigin"
-        self.algorithm = "pso" if self.alg_var.get()==0 else "gd"
+        self.algorithm = "pso" if self.alg_var.get()==0 else "gd" if self.alg_var.get()==1 else "ea"
 
     def set_default(self):
         """
@@ -223,7 +225,9 @@ class VisualizationPage(tk.Frame):
         if PSO.frames[StartPage].algorithm == "pso":
             self.text = ("Algorithm: "+ ("Particle Swarm Optimization" if PSO.frames[StartPage].algorithm else "Gradient Descent") + " on function: " + PSO.frames[StartPage].function + "."+"\nPopulation="+str(PSO.frames[StartPage].population)+";iterations="+str(PSO.frames[StartPage].iterations)+"\nomega="+str(PSO.frames[StartPage].omega)+" social constant="+str(PSO.frames[StartPage].social)+" cognitive constant="+str(PSO.frames[StartPage].cognitive))
         elif PSO.frames[StartPage].algorithm == "gd":
-            self.text = ("Algorithm: "+ ("Gradient Descent" if PSO.frames[StartPage].algorithm else "Gradient Descent") + " on function: " + PSO.frames[StartPage].function + "."+"\nPopulation="+str(PSO.frames[StartPage].population)+";iterations="+str(PSO.frames[StartPage].iterations))
+            self.text = ("Algorithm: "+ ("Gradient Descent" if PSO.frames[StartPage].algorithm else "Particle Swarm Optimization") + " on function: " + PSO.frames[StartPage].function + "."+"\nPopulation="+str(PSO.frames[StartPage].population)+";iterations="+str(PSO.frames[StartPage].iterations))
+        elif PSO.frames[StartPage].algorithm == "ea":
+            self.text = ("Algorithm: "+ ("Evolutionary Algorithm" if PSO.frames[StartPage].algorithm else "Particle Swarm Optimization") + " on function: " + PSO.frames[StartPage].function + "."+"\nPopulation="+str(PSO.frames[StartPage].population)+";iterations="+str(PSO.frames[StartPage].iterations))
 
         self.label2 = ttk.Label(self, text=self.text, font=LARGE_FONT)
         self.label2.pack()
@@ -497,6 +501,9 @@ class VisualizationPage(tk.Frame):
         elif PSO.frames[StartPage].algorithm == "gd":
             self.text = ("Algorithm: "+ ("Gradient Descent" if PSO.frames[StartPage].algorithm else "Gradient Descent") + " on function: " + PSO.frames[StartPage].function + ".")
             self.label2.config(text=self.text)
+        elif PSO.frames[StartPage].algorithm == "ea":
+            self.text = ("Algorithm: "+ ("Evolutionary Algorithm" if PSO.frames[StartPage].algorithm else "Evolutionary Algorithm") + " on function: " + PSO.frames[StartPage].function + ".")
+            self.label2.config(text=self.text)
 
         self.first_run = True
         self.refresh()
@@ -534,6 +541,12 @@ class VisualizationPage(tk.Frame):
                 self.av_cost_plot(av_cost)
             elif PSO.frames[StartPage].algorithm == "gd":
                 data, cost = gradient_descent.gradient_descent(function=self.function, iterations=self.iterations, population=self.population)
+                data = np.array(data)
+                cont_data, cont_scatters, cont_lines = self.contour_plot_step(data,i)
+                surf_data, surf_zs, surf_scatters, surf_lines = self.surface_plot_step(data,i)
+                self.cost_plot(cost)
+            elif PSO.frames[StartPage].algorithm == "ea":
+                #data, cost = evolutionary_algorithm.evolve(function=self.function, iterations=self.iterations, population=self.population)
                 data = np.array(data)
                 cont_data, cont_scatters, cont_lines = self.contour_plot_step(data,i)
                 surf_data, surf_zs, surf_scatters, surf_lines = self.surface_plot_step(data,i)

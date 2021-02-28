@@ -1,6 +1,11 @@
+"""Particle Swarm Optimization algorithm
+
+Authors:
+Julien Havel
+"""
 import random
 import numpy as np
-
+from utils import evaluate
 
 
 
@@ -43,6 +48,7 @@ def differential_evolution(crossover = 0.9, differential_weight = 0.8, populatio
     iteration = 0
     best_fitness = None
     agents_history = []
+    iteration_history = []
     while not end:
 
         for x in range(len(agents)-1):
@@ -90,26 +96,6 @@ def differential_evolution(crossover = 0.9, differential_weight = 0.8, populatio
 
 
 
-
-# TODO: Put "evaluate" function in a utilities file, it comes up in pso.py, gradient_desc.py and DE.py
-def evaluate(function, position):
-    """
-    :param function: (str) Cost functions used (options: rastrigin rosenbrock)
-    :param position: (list of the form [x,y]) x-y coordinates for individual particle to evaluate
-    :return: cost of the particle based on the position
-    """
-    b = 1
-    a = 0
-    A = 10
-    dimensions = 2
-
-    x = position[0]
-    y = position[1]
-
-    if function == "rastrigin":  # rastrigin
-        return A * dimensions + (x ** 2 - A * np.cos(np.pi * 2 * x)) + (y ** 2 - A * np.cos(np.pi * 2 * y))
-    elif function == "rosenbrock":  # rosenbrock a=0,b=1
-        return b* (y - x ** 2) ** 2 + (a - x) ** 2
 
 
 if __name__ == "__main__":
