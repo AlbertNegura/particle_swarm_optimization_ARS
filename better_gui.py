@@ -19,6 +19,7 @@ from tkinter import ttk
 import numpy as np
 import particle_swarm_optimization
 import gradient_descent
+from differential_evolution import differential_evolution
 
 LARGE_FONT= ("Verdana", 12)
 style.use("seaborn-muted") #best looking graph style
@@ -68,20 +69,23 @@ class StartPage(tk.Frame):
     Main menu with corresponding adjustable sliders.
     """
     omega = 0.9
+    crossover = 0.9
     def __init__(self, parent, controller):
         tk.Frame.__init__(self,parent)
         label1 = ttk.Label(self, text=("""Particle Swarm Optimization Visualization\nAuthors: Julien Havel, Albert Negura, Sergi Nogues"""), font=LARGE_FONT)
         label1.pack(pady=10,padx=10)
 
-        self.omega_slider = tk.Scale(self, from_=0.00, to=1.00, length=600,tickinterval=10, digits=3, resolution=0.01, orient=HORIZONTAL, label="Omega")
+        self.omega_slider = tk.Scale(self, from_=0.00, to=1.00, length=600,tickinterval=10, digits=3, resolution=0.01, orient=HORIZONTAL, label="Omega / Differential Weight (PSO/EA)")
         self.omega_slider.pack()
+        self.omega_slider2 = tk.Scale(self, from_=0.00, to=1.00, length=600,tickinterval=10, digits=3, resolution=0.01, orient=HORIZONTAL, label="Crossover (PSO/EA)")
+        self.omega_slider2.pack()
         self.social_slider = tk.Scale(self, from_=0.00, to=10.00, length=600,tickinterval=10, digits=4, resolution=0.01, orient=HORIZONTAL, label="Social Constant")
         self.social_slider.pack()
         self.cognitive_slider = tk.Scale(self, from_=0.00, to=10.00, length=600,tickinterval=10, digits=4, resolution=0.01, orient=HORIZONTAL, label="Cognitive Constant")
         self.cognitive_slider.pack()
-        self.population_slider = tk.Scale(self, from_=0, to=100, length=600,tickinterval=10, orient=HORIZONTAL, label="Population")
+        self.population_slider = tk.Scale(self, from_=0, to=100, length=600,tickinterval=10, orient=HORIZONTAL, label="Population (PSO/EA)")
         self.population_slider.pack()
-        self.iterations_slider = tk.Scale(self, from_=0, to=1000, length=600,tickinterval=100, orient=HORIZONTAL, label="Iterations")
+        self.iterations_slider = tk.Scale(self, from_=0, to=1000, length=600,tickinterval=100, orient=HORIZONTAL, label="Iterations (PSO/EA)")
         self.iterations_slider.pack()
 
 
@@ -166,6 +170,7 @@ class StartPage(tk.Frame):
         Update all values from the corresponding radio buttons / sliders.
         """
         self.omega = self.omega_slider.get()
+        self.crossover = self.omega_slider2.get()
         self.social = self.social_slider.get()
         self.cognitive = self.cognitive_slider.get()
         self.population = self.population_slider.get()
@@ -184,6 +189,7 @@ class StartPage(tk.Frame):
         self.cognitive_slider.set(2.00)
         self.social_slider.set(2.00)
         self.omega_slider.set(0.90)
+        self.omega_slider2.set(0.90)
         self.update_idletasks()
 
 class VisualizationPage(tk.Frame):
@@ -486,6 +492,13 @@ class VisualizationPage(tk.Frame):
             cont_data, cont_scatters, cont_lines = self.contour_plot(data2)
             surf_data, surf_zs, surf_scatters, surf_lines = self.surface_plot(data2)
             self.cost_plot(cost2)
+        elif PSO.frames[StartPage].algorithm == "ea":
+            _, _, data = differential_evolution(differential_weight=PSO.frames[StartPage].omega, crossover=PSO.frames[StartPage].crossover, function=self.function, population=PSO.frames[StartPage].population, max_iterations=PSO.frames[StartPage].iterations)
+            data = np.array(data)
+            cont_data, cont_scatters, cont_lines = self.contour_plot(data)
+            surf_data, surf_zs, surf_scatters, surf_lines = self.surface_plot(data)
+            #self.cost_plot(cost)
+            #self.av_cost_plot(av_cost)
         else: #default to PSO
             cont_data, cont_scatters, cont_lines = self.contour_plot(data)
             surf_data, surf_zs, surf_scatters, surf_lines = self.surface_plot(data)
@@ -546,7 +559,7 @@ class VisualizationPage(tk.Frame):
                 surf_data, surf_zs, surf_scatters, surf_lines = self.surface_plot_step(data,i)
                 self.cost_plot(cost)
             elif PSO.frames[StartPage].algorithm == "ea":
-                #data, cost = evolutionary_algorithm.evolve(function=self.function, iterations=self.iterations, population=self.population)
+                _, _, data, cost = differential_evolution(differential_weight=PSO.frames[StartPage].omega, crossover=PSO.frames[StartPage].crossover, function=self.function, population=PSO.frames[StartPage].population, max_iterations=PSO.frames[StartPage].iterations)
                 data = np.array(data)
                 cont_data, cont_scatters, cont_lines = self.contour_plot_step(data,i)
                 surf_data, surf_zs, surf_scatters, surf_lines = self.surface_plot_step(data,i)
