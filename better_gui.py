@@ -2,6 +2,7 @@
 
 Authors:
 Julien Havel
+Kamil Inglot
 Albert Negura
 Sergi Nogues Farres
 """
@@ -72,16 +73,16 @@ class StartPage(tk.Frame):
     crossover = 0.9
     def __init__(self, parent, controller):
         tk.Frame.__init__(self,parent)
-        label1 = ttk.Label(self, text=("""Particle Swarm Optimization Visualization\nAuthors: Julien Havel, Albert Negura, Sergi Nogues"""), font=LARGE_FONT)
+        label1 = ttk.Label(self, text=("""Particle Swarm Optimization Visualization\nAuthors: Julien Havel, Kamil Inglot, Albert Negura, Sergi Nogues"""), font=LARGE_FONT)
         label1.pack(pady=10,padx=10)
 
         self.omega_slider = tk.Scale(self, from_=0.00, to=1.00, length=600,tickinterval=10, digits=3, resolution=0.01, orient=HORIZONTAL, label="Omega / Differential Weight (PSO/EA)")
         self.omega_slider.pack()
-        self.omega_slider2 = tk.Scale(self, from_=0.00, to=1.00, length=600,tickinterval=10, digits=3, resolution=0.01, orient=HORIZONTAL, label="Crossover (PSO/EA)")
+        self.omega_slider2 = tk.Scale(self, from_=0.00, to=1.00, length=600,tickinterval=10, digits=3, resolution=0.01, orient=HORIZONTAL, label="Crossover (EA)")
         self.omega_slider2.pack()
-        self.social_slider = tk.Scale(self, from_=0.00, to=10.00, length=600,tickinterval=10, digits=4, resolution=0.01, orient=HORIZONTAL, label="Social Constant")
+        self.social_slider = tk.Scale(self, from_=0.00, to=10.00, length=600,tickinterval=10, digits=4, resolution=0.01, orient=HORIZONTAL, label="Social Constant (PSO)")
         self.social_slider.pack()
-        self.cognitive_slider = tk.Scale(self, from_=0.00, to=10.00, length=600,tickinterval=10, digits=4, resolution=0.01, orient=HORIZONTAL, label="Cognitive Constant")
+        self.cognitive_slider = tk.Scale(self, from_=0.00, to=10.00, length=600,tickinterval=10, digits=4, resolution=0.01, orient=HORIZONTAL, label="Cognitive Constant (PSO)")
         self.cognitive_slider.pack()
         self.population_slider = tk.Scale(self, from_=0, to=100, length=600,tickinterval=10, orient=HORIZONTAL, label="Population (PSO/EA)")
         self.population_slider.pack()
@@ -103,11 +104,11 @@ class StartPage(tk.Frame):
         label3.pack(pady=10,padx=10)
         self.algorithm = "pso"
         self.alg_var = IntVar(self)
-        self.algorithm_radio1 = ttk.Radiobutton(self, text="Particle Swarm Optimization (DEFAULT)", variable=self.alg_var, value=0, command=self.set_algo)
+        self.algorithm_radio1 = ttk.Radiobutton(self, text="Particle Swarm Optimization (PSO - DEFAULT)", variable=self.alg_var, value=0, command=self.set_algo)
         self.algorithm_radio1.pack()
-        self.algorithm_radio2 = ttk.Radiobutton(self, text="Gradient Descent (note that sliders don't do anything)", variable=self.alg_var, value=1, command=self.set_algo)
+        self.algorithm_radio2 = ttk.Radiobutton(self, text="Gradient Descent (GD - note that sliders don't do anything)", variable=self.alg_var, value=1, command=self.set_algo)
         self.algorithm_radio2.pack()
-        self.algorithm_radio3 = ttk.Radiobutton(self, text="Evolutionary Algorithm (note that sliders don't do anything)", variable=self.alg_var, value=2, command=self.set_algo)
+        self.algorithm_radio3 = ttk.Radiobutton(self, text="Differential Evolution Algorithm (EA)", variable=self.alg_var, value=2, command=self.set_algo)
         self.algorithm_radio3.pack()
 
         label4 = ttk.Label(self, text=("""Select neighbourhood behaviour for PSO."""), font=LARGE_FONT)
@@ -514,7 +515,7 @@ class VisualizationPage(tk.Frame):
             self.text = ("Algorithm: "+ ("Gradient Descent" if PSO.frames[StartPage].algorithm else "Gradient Descent") + " on function: " + PSO.frames[StartPage].function + ".")
             self.label2.config(text=self.text)
         elif PSO.frames[StartPage].algorithm == "ea":
-            self.text = ("Algorithm: "+ ("Evolutionary Algorithm" if PSO.frames[StartPage].algorithm else "Evolutionary Algorithm") + " on function: " + PSO.frames[StartPage].function + ".")
+            self.text = ("Algorithm: "+ ("Evolutionary Algorithm" if PSO.frames[StartPage].algorithm else "Evolutionary Algorithm") + " on function: " + PSO.frames[StartPage].function + "."+"\nPopulation="+str(PSO.frames[StartPage].population)+";iterations="+str(PSO.frames[StartPage].iterations)+"\ndifferential weight="+str(PSO.frames[StartPage].omega)+" crossover="+str(PSO.frames[StartPage].crossover))
             self.label2.config(text=self.text)
 
         self.first_run = True
