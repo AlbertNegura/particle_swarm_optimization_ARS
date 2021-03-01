@@ -1,6 +1,6 @@
 # Particle Swarm Optimization
 
-## Authors: Albert Negura, Julien Havel, Sergi Nogues Farres
+## Authors: Albert Negura, Julien Havel, Kamil Inglot, Sergi Nogues Farres
 
 Requires Python 3.8 or above.
 
