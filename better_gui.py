@@ -80,10 +80,8 @@ class StartPage(tk.Frame):
 
         self.omega_slider = tk.Scale(self, from_=0.00, to=1.00, length=600,tickinterval=10, digits=3, resolution=0.01, orient=HORIZONTAL, label="Omega / Differential Weight (PSO/EA)")
         self.omega_slider.pack()
-        self.omega_slider2 = tk.Scale(self, from_=0.00, to=1.00, length=600,tickinterval=10, digits=3, resolution=0.01, orient=HORIZONTAL, label="Crossover (EA/GA)")
+        self.omega_slider2 = tk.Scale(self, from_=0.00, to=1.00, length=600,tickinterval=10, digits=3, resolution=0.01, orient=HORIZONTAL, label="Crossover (EA) / Mutation (GA)")
         self.omega_slider2.pack()
-        self.omega_slider3 = tk.Scale(self, from_=0.00, to=1.00, length=600,tickinterval=10, digits=3, resolution=0.01, orient=HORIZONTAL, label="Mutation (GA)")
-        self.omega_slider3.pack()
         self.social_slider = tk.Scale(self, from_=0.00, to=10.00, length=600,tickinterval=10, digits=4, resolution=0.01, orient=HORIZONTAL, label="Social Constant (PSO)")
         self.social_slider.pack()
         self.cognitive_slider = tk.Scale(self, from_=0.00, to=10.00, length=600,tickinterval=10, digits=4, resolution=0.01, orient=HORIZONTAL, label="Cognitive Constant (PSO)")
@@ -179,7 +177,7 @@ class StartPage(tk.Frame):
         """
         self.omega = self.omega_slider.get()
         self.crossover = self.omega_slider2.get()
-        self.mutation = self.omega_slider3.get()
+        self.mutation = self.omega_slider2.get()
         self.social = self.social_slider.get()
         self.cognitive = self.cognitive_slider.get()
         self.population = self.population_slider.get()
@@ -200,7 +198,6 @@ class StartPage(tk.Frame):
         self.social_slider.set(2.00)
         self.omega_slider.set(0.90)
         self.omega_slider2.set(0.80)
-        self.omega_slider3.set(0.10)
         self.update_idletasks()
 
 class VisualizationPage(tk.Frame):
