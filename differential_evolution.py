@@ -58,7 +58,7 @@ def differential_evolution(crossover = 0.9, differential_weight = 0.8, populatio
             temp = []
             while len(temp) < 3:
                 rand_agent = random.randint(0, len(agents)-1)
-                if (rand_agent not in temp) or rand_agent != x:
+                if (rand_agent not in temp) and rand_agent != x:
                     temp.append(rand_agent)
             a = temp[0]
             b = temp[1]
