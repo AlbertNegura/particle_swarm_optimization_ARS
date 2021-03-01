@@ -147,14 +147,12 @@ def genetic_algorithm(mutation = 0.1, population = 10, function="rosenbrock", ma
         iteration_history = []
         selected_agents = []
         # SELECTION
-        if selection == "elitism":
+        if selection == "elitism" or selection == "steady":
             selected_agents = np.argpartition(fitness_history[iteration], num_selected)
         elif selection == "tournament":
             pass
         elif selection == "roulette":
             pass
-        elif selection == "steady":
-            selected_agents = np.argpartition(fitness_history[iteration], num_selected)
         else: # in case of error, default to elitism
             selected_agents = np.argpartition(fitness_history[iteration], num_selected)
         for x in range(len(agents)):
