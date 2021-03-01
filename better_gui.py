@@ -20,7 +20,7 @@ from tkinter import ttk
 import numpy as np
 import particle_swarm_optimization
 import gradient_descent
-from differential_evolution import differential_evolution
+from differential_evolution import differential_evolution, genetic_algorithm
 
 LARGE_FONT= ("Verdana", 12)
 style.use("seaborn-muted") #best looking graph style
@@ -71,6 +71,7 @@ class StartPage(tk.Frame):
     """
     omega = 0.9
     crossover = 0.9
+    mutation = 0.1
     def __init__(self, parent, controller):
         tk.Frame.__init__(self,parent)
         label1 = ttk.Label(self, text=("""Particle Swarm Optimization Visualization\nAuthors: Julien Havel, Kamil Inglot, Albert Negura, Sergi Nogues"""), font=LARGE_FONT)
@@ -78,15 +79,17 @@ class StartPage(tk.Frame):
 
         self.omega_slider = tk.Scale(self, from_=0.00, to=1.00, length=600,tickinterval=10, digits=3, resolution=0.01, orient=HORIZONTAL, label="Omega / Differential Weight (PSO/EA)")
         self.omega_slider.pack()
-        self.omega_slider2 = tk.Scale(self, from_=0.00, to=1.00, length=600,tickinterval=10, digits=3, resolution=0.01, orient=HORIZONTAL, label="Crossover (EA)")
+        self.omega_slider2 = tk.Scale(self, from_=0.00, to=1.00, length=600,tickinterval=10, digits=3, resolution=0.01, orient=HORIZONTAL, label="Crossover (EA/GA)")
         self.omega_slider2.pack()
+        self.omega_slider3 = tk.Scale(self, from_=0.00, to=1.00, length=600,tickinterval=10, digits=3, resolution=0.01, orient=HORIZONTAL, label="Mutation (GA)")
+        self.omega_slider3.pack()
         self.social_slider = tk.Scale(self, from_=0.00, to=10.00, length=600,tickinterval=10, digits=4, resolution=0.01, orient=HORIZONTAL, label="Social Constant (PSO)")
         self.social_slider.pack()
         self.cognitive_slider = tk.Scale(self, from_=0.00, to=10.00, length=600,tickinterval=10, digits=4, resolution=0.01, orient=HORIZONTAL, label="Cognitive Constant (PSO)")
         self.cognitive_slider.pack()
-        self.population_slider = tk.Scale(self, from_=0, to=100, length=600,tickinterval=10, orient=HORIZONTAL, label="Population (PSO/EA)")
+        self.population_slider = tk.Scale(self, from_=0, to=100, length=600,tickinterval=10, orient=HORIZONTAL, label="Population (ALL)")
         self.population_slider.pack()
-        self.iterations_slider = tk.Scale(self, from_=0, to=1000, length=600,tickinterval=100, orient=HORIZONTAL, label="Iterations (PSO/EA)")
+        self.iterations_slider = tk.Scale(self, from_=0, to=1000, length=600,tickinterval=100, orient=HORIZONTAL, label="Iterations (ALL)")
         self.iterations_slider.pack()
 
 
@@ -106,10 +109,12 @@ class StartPage(tk.Frame):
         self.alg_var = IntVar(self)
         self.algorithm_radio1 = ttk.Radiobutton(self, text="Particle Swarm Optimization (PSO - DEFAULT)", variable=self.alg_var, value=0, command=self.set_algo)
         self.algorithm_radio1.pack()
-        self.algorithm_radio2 = ttk.Radiobutton(self, text="Gradient Descent (GD - note that sliders don't do anything)", variable=self.alg_var, value=1, command=self.set_algo)
+        self.algorithm_radio2 = ttk.Radiobutton(self, text="Gradient Descent (GD)", variable=self.alg_var, value=1, command=self.set_algo)
         self.algorithm_radio2.pack()
         self.algorithm_radio3 = ttk.Radiobutton(self, text="Differential Evolution Algorithm (EA)", variable=self.alg_var, value=2, command=self.set_algo)
         self.algorithm_radio3.pack()
+        self.algorithm_radio4 = ttk.Radiobutton(self, text="Genetic Evolution (GA)", variable=self.alg_var, value=3, command=self.set_algo)
+        self.algorithm_radio4.pack()
 
         label4 = ttk.Label(self, text=("""Select neighbourhood behaviour for PSO."""), font=LARGE_FONT)
         label4.pack(pady=10,padx=10)
@@ -172,13 +177,14 @@ class StartPage(tk.Frame):
         """
         self.omega = self.omega_slider.get()
         self.crossover = self.omega_slider2.get()
+        self.mutation = self.omega_slider3.get()
         self.social = self.social_slider.get()
         self.cognitive = self.cognitive_slider.get()
         self.population = self.population_slider.get()
         self.iterations = self.iterations_slider.get()
         self.neighbourhood = "global" if self.neigh_var.get()==0 else "social-two"  if self.neigh_var.get()==1 else "social-four" if self.neigh_var.get()==2  else "geographical"
         self.function = "rosenbrock" if self.func_var.get()==0 else "rastrigin"
-        self.algorithm = "pso" if self.alg_var.get()==0 else "gd" if self.alg_var.get()==1 else "ea"
+        self.algorithm = "pso" if self.alg_var.get()==0 else "gd" if self.alg_var.get()==1 else "ea" if self.alg_var.get()==2 else "ga"
 
     def set_default(self):
         """
@@ -190,7 +196,8 @@ class StartPage(tk.Frame):
         self.cognitive_slider.set(2.00)
         self.social_slider.set(2.00)
         self.omega_slider.set(0.90)
-        self.omega_slider2.set(0.90)
+        self.omega_slider2.set(0.80)
+        self.omega_slider3.set(0.10)
         self.update_idletasks()
 
 class VisualizationPage(tk.Frame):
@@ -234,8 +241,9 @@ class VisualizationPage(tk.Frame):
         elif PSO.frames[StartPage].algorithm == "gd":
             self.text = ("Algorithm: "+ ("Gradient Descent" if PSO.frames[StartPage].algorithm else "Particle Swarm Optimization") + " on function: " + PSO.frames[StartPage].function + "."+"\nPopulation="+str(PSO.frames[StartPage].population)+";iterations="+str(PSO.frames[StartPage].iterations))
         elif PSO.frames[StartPage].algorithm == "ea":
-            self.text = ("Algorithm: "+ ("Evolutionary Algorithm" if PSO.frames[StartPage].algorithm else "Particle Swarm Optimization") + " on function: " + PSO.frames[StartPage].function + "."+"\nPopulation="+str(PSO.frames[StartPage].population)+";iterations="+str(PSO.frames[StartPage].iterations))
-
+            self.text = ("Algorithm: "+ ("Evolutionary Algorithm" if PSO.frames[StartPage].algorithm else "Evolutionary Algorithm") + " on function: " + PSO.frames[StartPage].function + "."+"\nPopulation="+str(PSO.frames[StartPage].population)+";iterations="+str(PSO.frames[StartPage].iterations)+"\ndifferential weight="+str(PSO.frames[StartPage].omega)+" crossover="+str(PSO.frames[StartPage].crossover))
+        elif PSO.frames[StartPage].algorithm == "ga":
+            self.text = ("Algorithm: "+ ("Genetic Algorithm" if PSO.frames[StartPage].algorithm else "Genetic Algorithm") + " on function: " + PSO.frames[StartPage].function + "."+"\nPopulation="+str(PSO.frames[StartPage].population)+";iterations="+str(PSO.frames[StartPage].iterations)+"\nmutation="+str(PSO.frames[StartPage].omega)+" crossover="+str(PSO.frames[StartPage].crossover))
         self.label2 = ttk.Label(self, text=self.text, font=LARGE_FONT)
         self.label2.pack()
 
@@ -578,6 +586,14 @@ class VisualizationPage(tk.Frame):
             cost = np.array(cost)
             self.cost_plot(cost)
             cont_data2, cont_scatters2, cont_lines2 = self.best_agent_contour_plot(np.array(agent))
+        elif PSO.frames[StartPage].algorithm == "ga":
+            agent, cost, data = genetic_algorithm(mutation=PSO.frames[StartPage].mutation, crossover=PSO.frames[StartPage].crossover, function=self.function, population=PSO.frames[StartPage].population, max_iterations=PSO.frames[StartPage].iterations)
+            data = np.array(data)
+            cont_data, cont_scatters, cont_lines = self.contour_plot(data)
+            surf_data, surf_zs, surf_scatters, surf_lines = self.surface_plot(data)
+            cost = np.array(cost)
+            self.cost_plot(cost)
+            cont_data2, cont_scatters2, cont_lines2 = self.best_agent_contour_plot(np.array(agent))
         else: #default to PSO
             cont_data, cont_scatters, cont_lines = self.contour_plot(data)
             surf_data, surf_zs, surf_scatters, surf_lines = self.surface_plot(data)
@@ -599,6 +615,9 @@ class VisualizationPage(tk.Frame):
             self.label2.config(text=self.text)
         elif PSO.frames[StartPage].algorithm == "ea":
             self.text = ("Algorithm: "+ ("Evolutionary Algorithm" if PSO.frames[StartPage].algorithm else "Evolutionary Algorithm") + " on function: " + PSO.frames[StartPage].function + "."+"\nPopulation="+str(PSO.frames[StartPage].population)+";iterations="+str(PSO.frames[StartPage].iterations)+"\ndifferential weight="+str(PSO.frames[StartPage].omega)+" crossover="+str(PSO.frames[StartPage].crossover))
+            self.label2.config(text=self.text)
+        elif PSO.frames[StartPage].algorithm == "ga":
+            self.text = ("Algorithm: "+ ("Genetic Algorithm" if PSO.frames[StartPage].algorithm else "Genetic Algorithm") + " on function: " + PSO.frames[StartPage].function + "."+"\nPopulation="+str(PSO.frames[StartPage].population)+";iterations="+str(PSO.frames[StartPage].iterations)+"\nmutation="+str(PSO.frames[StartPage].mutation)+" crossover="+str(PSO.frames[StartPage].crossover))
             self.label2.config(text=self.text)
 
         self.first_run = True
@@ -651,6 +670,15 @@ class VisualizationPage(tk.Frame):
                 av_cost = None
                 self.cost_plot(cost)
                 self.best_agent_contour_plot_step(np.array(agent), i)
+            elif PSO.frames[StartPage].algorithm == "ga":
+                agent, cost, data = genetic_algorithm(mutation=PSO.frames[StartPage].omega, crossover=PSO.frames[StartPage].crossover, function=self.function, population=PSO.frames[StartPage].population, max_iterations=PSO.frames[StartPage].iterations)
+                data = np.array(data)
+                cont_data, cont_scatters, cont_lines = self.contour_plot_step(data,i)
+                surf_data, surf_zs, surf_scatters, surf_lines = self.surface_plot_step(data,i)
+                cost = np.array(cost)
+                av_cost = None
+                self.cost_plot(cost)
+                self.best_agent_contour_plot_step(np.array(agent), i)
             else: #default to PSO
                 data, cost, av_cost = particle_swarm_optimization.pso(population=PSO.frames[StartPage].population, iterations=PSO.frames[StartPage].iterations, function=self.function, optimize_a=False, a=PSO.frames[StartPage].omega, b=PSO.frames[StartPage].social, c=PSO.frames[StartPage].cognitive)
                 data = np.array(data)
@@ -667,6 +695,9 @@ class VisualizationPage(tk.Frame):
                 self.label2.config(text=self.text)
             elif PSO.frames[StartPage].algorithm == "ea":
                 self.text = ("Algorithm: "+ ("Evolutionary Algorithm" if PSO.frames[StartPage].algorithm else "Evolutionary Algorithm") + " on function: " + PSO.frames[StartPage].function + "."+"\nPopulation="+str(PSO.frames[StartPage].population)+";iterations="+str(PSO.frames[StartPage].iterations)+"\ndifferential weight="+str(PSO.frames[StartPage].omega)+" crossover="+str(PSO.frames[StartPage].crossover))
+                self.label2.config(text=self.text)
+            elif PSO.frames[StartPage].algorithm == "ga":
+                self.text = ("Algorithm: "+ ("Genetic Algorithm" if PSO.frames[StartPage].algorithm else "Genetic Algorithm") + " on function: " + PSO.frames[StartPage].function + "."+"\nPopulation="+str(PSO.frames[StartPage].population)+";iterations="+str(PSO.frames[StartPage].iterations)+"\nmutation="+str(PSO.frames[StartPage].mutation)+" crossover="+str(PSO.frames[StartPage].crossover))
                 self.label2.config(text=self.text)
             i+=1
             self.iterations_slider.set(i)
