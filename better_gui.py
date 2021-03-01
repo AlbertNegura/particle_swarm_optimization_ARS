@@ -76,8 +76,7 @@ class StartPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self,parent)
         label1 = ttk.Label(self, text=("""Particle Swarm Optimization Visualization\nAuthors: Julien Havel, Kamil Inglot, Albert Negura, Sergi Nogues"""), font=LARGE_FONT)
-        label1.pack(pady=10,padx=10)
-
+        label1.pack()
         self.omega_slider = tk.Scale(self, from_=0.00, to=1.00, length=600,tickinterval=10, digits=3, resolution=0.01, orient=HORIZONTAL, label="Omega / Differential Weight (PSO/EA)")
         self.omega_slider.pack()
         self.omega_slider2 = tk.Scale(self, from_=0.00, to=1.00, length=600,tickinterval=10, digits=3, resolution=0.01, orient=HORIZONTAL, label="Crossover (EA) / Mutation (GA)")
@@ -93,7 +92,7 @@ class StartPage(tk.Frame):
 
 
         label2 = ttk.Label(self, text=("""Select function to minimize:"""), font=LARGE_FONT)
-        label2.pack(pady=10,padx=10)
+        label2.pack()
         self.function = "rosenbrock"
         self.func_var = IntVar(self)
         self.function_radio1 = ttk.Radiobutton(self, text="Rosenbrock (DEFAULT)", variable=self.func_var, value=0, command=self.set_func)
@@ -103,7 +102,7 @@ class StartPage(tk.Frame):
 
 
         label3 = ttk.Label(self, text=("""Select algorithm:"""), font=LARGE_FONT)
-        label3.pack(pady=10,padx=10)
+        label3.pack()
         self.algorithm = "pso"
         self.alg_var = IntVar(self)
         self.algorithm_radio1 = ttk.Radiobutton(self, text="Particle Swarm Optimization (PSO - DEFAULT)", variable=self.alg_var, value=0, command=self.set_algo)
