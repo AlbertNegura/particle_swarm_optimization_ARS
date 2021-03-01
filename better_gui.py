@@ -316,7 +316,6 @@ class VisualizationPage(tk.Frame):
         self.ax4.contourf(X, Y, Z, levels=levels, cmap='viridis',alpha=0.3)
         self.ax4.scatter(0,0, c="white",marker="*", edgecolors="black", s=250) # denote the minimum
         self.ax4.title.set_text("2D Contour Plot of Objective Function")
-        print(data)
         # plot the particles
         xs = data[:, 0]
         ys = data[:, 1]
