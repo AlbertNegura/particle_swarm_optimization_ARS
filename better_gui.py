@@ -115,7 +115,7 @@ class StartPage(tk.Frame):
         self.algorithm_radio4.pack()
 
         label4 = ttk.Label(self, text=("""Select neighbourhood behaviour for PSO:"""), font=LARGE_FONT)
-        label4.pack(pady=10,padx=10)
+        label4.pack()
         self.neighbourhood = "global"
         self.neigh_var = IntVar(self)
         self.neighbourhood_radio1 = ttk.Radiobutton(self, text="Global Neighbourhood / Elitism Selection with 20% of population (PSO/GA - DEFAULT)", variable=self.neigh_var, value=0, command=self.set_neighbourhood)
