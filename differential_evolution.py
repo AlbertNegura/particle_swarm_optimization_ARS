@@ -131,8 +131,9 @@ def genetic_algorithm(mutation = 0.1, population = 10, function="rosenbrock", ma
     for agent in agents:
         np.clip(agent, bounds[0], bounds[1])
     end = False
-    iteration = 0
+    iteration = 1
     best_fitness = None
+    first_run = True
     agents_history = np.zeros((max_iterations,len(agents),2),dtype=float)
     fitness_history = np.zeros((max_iterations,len(agents)),dtype=float)
     fitness_history[0] = [evaluate(function, agent) for agent in agents]
@@ -142,18 +143,18 @@ def genetic_algorithm(mutation = 0.1, population = 10, function="rosenbrock", ma
         selected_agents = []
         # SELECTION
         if selection == "elitism" or selection == "steady":
-            selected_agents = np.argpartition(fitness_history[iteration], num_selected+1)
+            selected_agents = np.argpartition(fitness_history[iteration-1], num_selected+1)
         elif selection == "tournament":
             random_order = np.random.choice(range(population),population, replace=False)
             left_bracket = random_order[:num_selected]
             right_bracket = random_order[num_selected:]
             for i in range(num_selected):
-                selected_agent = left_bracket[i] if fitness_history[iteration][left_bracket[i]] > fitness_history[iteration][right_bracket[i]]  else right_bracket[i] if fitness_history[iteration][left_bracket[i]] < fitness_history[iteration][right_bracket[i]] else np.random.choice([left_bracket[i],right_bracket[i]])
+                selected_agent = left_bracket[i] if fitness_history[iteration-1][left_bracket[i]] > fitness_history[iteration-1][right_bracket[i]]  else right_bracket[i] if fitness_history[iteration-1][left_bracket[i]] < fitness_history[iteration-1][right_bracket[i]] else np.random.choice([left_bracket[i],right_bracket[i]])
                 selected_agents.append(selected_agent)
         elif selection == "roulette":
-            total_fitness = np.sum(fitness_history[iteration])
+            total_fitness = np.sum(fitness_history[iteration-1])
             random_order = np.random.choice(range(population), population, replace=False)
-            roulette_selection = {int(i) : fitness_history[iteration][int(i)] for i in random_order}
+            roulette_selection = {int(i) : fitness_history[iteration-1][int(i)] for i in random_order}
             chance = np.random.uniform(0, total_fitness)
             i = 0
             current = 0
@@ -165,7 +166,10 @@ def genetic_algorithm(mutation = 0.1, population = 10, function="rosenbrock", ma
                     if i >= num_selected:
                         break
         else: # in case of error, default to elitism
-            selected_agents = np.argpartition(fitness_history[iteration], num_selected+1)
+            selected_agents = np.argpartition(fitness_history[iteration-1], num_selected+1)
+        if first_run:
+            first_run = False
+            iteration = 0
         for x in range(len(agents)):
             if x in selected_agents[:num_selected]:
                 new_agent = agents[x]
