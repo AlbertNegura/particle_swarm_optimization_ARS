@@ -601,7 +601,7 @@ class VisualizationPage(tk.Frame):
             surf_data, surf_zs, surf_scatters, surf_lines = self.surface_plot(data)
             self.cost_plot(cost)
             self.av_cost_plot(av_cost)
-        if not PSO.frames[StartPage].algorithm == "ea":
+        if not (PSO.frames[StartPage].algorithm == "ea" or PSO.frames[StartPage].algorithm == "ga"):
             ani1 = animation.FuncAnimation(self.figure, self.animate, frames=self.iterations,
                                            fargs=[cont_data, cont_scatters, cont_lines, surf_data, surf_zs, surf_scatters, surf_lines, PSO.frames[StartPage].algorithm], interval=10,
                                            blit=False, repeat=True)

@@ -142,7 +142,7 @@ def genetic_algorithm(mutation = 0.1, population = 10, function="rosenbrock", ma
         selected_agents = []
         # SELECTION
         if selection == "elitism" or selection == "steady":
-            selected_agents = np.argpartition(fitness_history[iteration], num_selected)
+            selected_agents = np.argpartition(fitness_history[iteration], num_selected+1)
         elif selection == "tournament":
             random_order = np.random.choice(range(population),population, replace=False)
             left_bracket = random_order[:num_selected]
@@ -165,7 +165,7 @@ def genetic_algorithm(mutation = 0.1, population = 10, function="rosenbrock", ma
                     if i >= num_selected:
                         break
         else: # in case of error, default to elitism
-            selected_agents = np.argpartition(fitness_history[iteration], num_selected)
+            selected_agents = np.argpartition(fitness_history[iteration], num_selected+1)
         for x in range(len(agents)):
             if x in selected_agents[:num_selected]:
                 new_agent = agents[x]
@@ -198,8 +198,7 @@ def genetic_algorithm(mutation = 0.1, population = 10, function="rosenbrock", ma
 
     # calculate total fitness for all agents
     fitnesses = np.array([[evaluate(function, agent) for agent in agents] for agents in agents_history])
-    sum_fitness = [np.sum(fitnesses[:,i]) for i in range(population)]
-    best_agent_id = np.argmin(sum_fitness)
+    best_agent_id = int(np.argmin(fitnesses)/max_iterations) % population
     best_agent = agents_history[:,best_agent_id,:]
     best_fitness = fitnesses[:,best_agent_id]
     return best_agent, best_fitness, agents_history #best_fitness_history
