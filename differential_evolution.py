@@ -105,12 +105,6 @@ def mutate(parent, lower_bound, upper_bound):
 
 
 def genetic_algorithm(mutation = 0.1, population = 10, function="rosenbrock", max_iterations=5000, target_fitness=None, dimensions = 2, selection="elitism"):
-    # check crossover in [0,1]
-    # check weight in [0,2]
-    # check pop >= 4
-    # check either max_iter or target_fitness != None (I get both can be.. Untested for now)
-    # check dimensions > 0 and an Integer
-
     """
     :param crossover:
     :param mutation:
