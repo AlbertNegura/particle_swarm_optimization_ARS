@@ -289,6 +289,35 @@ class VisualizationPage(tk.Frame):
             lines.append(line)
         return data, scatters, lines
 
+    def best_agent_contour_plot(self, data):
+        """
+        Generate contour plot based on the given data.
+        :param data: data from which to generate contour plot
+        """
+        x = np.arange(np.min(self.bounds), np.max(self.bounds) + 0.05, 0.05)
+        y = np.arange(np.min(self.bounds), np.max(self.bounds) + 0.05, 0.05)
+        X, Y = np.meshgrid(x, y) # meshgrid between bounds for contour
+        zs = np.array(self.function_of(np.ravel(X), np.ravel(Y))) # calculate function over meshgrid
+        Z = zs.reshape(X.shape)
+        levels = 50
+        if self.function == "rastrigin": # rastrigin is very slow with too many levels, so manually reduce levels
+            levels=10
+        self.ax4.contourf(X, Y, Z, levels=levels, cmap='viridis',alpha=0.3)
+        self.ax4.scatter(0,0, c="white",marker="*", edgecolors="black", s=250) # denote the minimum
+        self.ax4.title.set_text("2D Contour Plot of Objective Function")
+        print(data)
+        # plot the particles
+        xs = data[:, 0]
+        ys = data[:, 1]
+        scatters = self.ax4.scatter(xs[0], ys[0], c="red", marker="o", vmin=0, vmax=data.shape[1], edgecolors="Black")
+
+        # plot particle "trails" for better visualization
+        lines = []
+        for i in range(data.shape[1]):
+            line = self.ax4.plot(xs[i], ys[i], c="Black", alpha=0.6)
+            lines.append(line)
+        return data, scatters, lines
+
     def contour_plot_step(self, data, time):
         """
         Generate contour plot based on the given data in a step-by-step fashion.
@@ -319,6 +348,37 @@ class VisualizationPage(tk.Frame):
         for i in range(data.shape[1]):
             line = self.ax1.plot(data[:time, i,0], data[:time, i,1], alpha=0.6)
             lines.append(line)
+        return data, scatters, lines
+
+    def best_agent_contour_plot_step(self, data, time):
+        """
+        Generate contour plot based on the given data in a step-by-step fashion.
+        :param data: data from which to generate contour plot
+        :param time: time step for which to plot the data
+        """
+        x = np.arange(np.min(self.bounds), np.max(self.bounds) + 0.05, 0.05)
+        y = np.arange(np.min(self.bounds), np.max(self.bounds) + 0.05, 0.05)
+        X, Y = np.meshgrid(x, y) # meshgrid between bounds for contour
+        zs = np.array(self.function_of(np.ravel(X), np.ravel(Y))) # calculate function over meshgrid
+        Z = zs.reshape(X.shape)
+
+        levels = 50
+        if self.function == "rastrigin": # rastrigin is very slow with too many levels, so manually reduce levels
+            levels=10
+
+        self.ax4.contourf(X, Y, Z, levels=levels, cmap='viridis',alpha=0.3)
+        self.ax4.scatter(0,0, c="white",marker="*", edgecolors="black", s=250) # denote the minimum
+        self.ax4.title.set_text("2D Contour Plot of Objective Function")
+
+        # plot the particles at the given time step
+        xs = data[time, 0]
+        ys = data[time, 1]
+        scatters = self.ax4.scatter(xs, ys, c="red", marker="o", vmin=0, vmax=data.shape[1], edgecolors="Black")
+
+        # plot particle "trails" for better visualization
+        lines = []
+        line = self.ax4.plot(data[:time+1, 0], data[:time+1, 1], alpha=0.6)
+        lines.append(line)
         return data, scatters, lines
 
     def surface_plot(self,data):
@@ -410,7 +470,7 @@ class VisualizationPage(tk.Frame):
         self.ax4.title.set_text('Average Cost Function')
         self.ax4.plot(data, lw=3)
 
-    def animate(self, i, data, scatters, lines, surf_data, surf_zs, surf_scatters, surf_lines, algorithm):
+    def animate(self, i, data, scatters, lines, surf_data, surf_zs, surf_scatters, surf_lines, algorithm, optional_data = None, optional_scatter = None, optional_lines = None):
         """
         Animate both the contour and the surface plots.
         :param i: animation time step
@@ -441,6 +501,24 @@ class VisualizationPage(tk.Frame):
                 if i >= 5:
                     xs = data[i - 5:i, lnum, :2]
                     line[0].set_data(xs[:, 0], xs[:, 1])
+
+        if optional_data is not None:
+            optional_plot_data = optional_data[i, :2]
+            optional_scatter.set_offsets(optional_plot_data)
+            if i > 0:
+                for lnum, line in enumerate(optional_lines):
+                    if i == 2:
+                        xs = optional_data[i - 2:i, :2]
+                        line[0].set_data(xs[:, 0], xs[:, 1])
+                    if i == 3:
+                        xs = optional_data[i - 3:i, :2]
+                        line[0].set_data(xs[:, 0], xs[:, 1])
+                    if i == 4:
+                        xs = optional_data[i - 4:i, :2]
+                        line[0].set_data(xs[:, 0], xs[:, 1])
+                    if i >= 5:
+                        xs = optional_data[i - 5:i, :2]
+                        line[0].set_data(xs[:, 0], xs[:, 1])
         plot_data_x = surf_data[i, :, 0]
         plot_data_y = surf_data[i, :, 1]
         plot_data_z = surf_zs[i]
@@ -465,7 +543,7 @@ class VisualizationPage(tk.Frame):
         """
         Executes the PSO/GD algorithm with the selected parameters and animates them.
         """
-        global ani1
+        global ani1, agent
         if ani1 is not None:
             ani1.event_source.stop()
         self.ax1.cla()
@@ -493,20 +571,25 @@ class VisualizationPage(tk.Frame):
             surf_data, surf_zs, surf_scatters, surf_lines = self.surface_plot(data2)
             self.cost_plot(cost2)
         elif PSO.frames[StartPage].algorithm == "ea":
-            _, _, data = differential_evolution(differential_weight=PSO.frames[StartPage].omega, crossover=PSO.frames[StartPage].crossover, function=self.function, population=PSO.frames[StartPage].population, max_iterations=PSO.frames[StartPage].iterations)
+            agent, cost, data = differential_evolution(differential_weight=PSO.frames[StartPage].omega, crossover=PSO.frames[StartPage].crossover, function=self.function, population=PSO.frames[StartPage].population, max_iterations=PSO.frames[StartPage].iterations)
             data = np.array(data)
             cont_data, cont_scatters, cont_lines = self.contour_plot(data)
             surf_data, surf_zs, surf_scatters, surf_lines = self.surface_plot(data)
-            #self.cost_plot(cost)
-            #self.av_cost_plot(av_cost)
+            cost = np.array(cost)
+            self.cost_plot(cost)
+            cont_data2, cont_scatters2, cont_lines2 = self.best_agent_contour_plot(np.array(agent))
         else: #default to PSO
             cont_data, cont_scatters, cont_lines = self.contour_plot(data)
             surf_data, surf_zs, surf_scatters, surf_lines = self.surface_plot(data)
             self.cost_plot(cost)
             self.av_cost_plot(av_cost)
-
-        ani1 = animation.FuncAnimation(self.figure, self.animate, frames=self.iterations,
+        if not PSO.frames[StartPage].algorithm == "ea":
+            ani1 = animation.FuncAnimation(self.figure, self.animate, frames=self.iterations,
                                            fargs=[cont_data, cont_scatters, cont_lines, surf_data, surf_zs, surf_scatters, surf_lines, PSO.frames[StartPage].algorithm], interval=10,
+                                           blit=False, repeat=True)
+        else:
+            ani1 = animation.FuncAnimation(self.figure, self.animate, frames=self.iterations,
+                                           fargs=[cont_data, cont_scatters, cont_lines, surf_data, surf_zs, surf_scatters, surf_lines, PSO.frames[StartPage].algorithm, cont_data2, cont_scatters2, cont_lines2], interval=10,
                                            blit=False, repeat=True)
         if PSO.frames[StartPage].algorithm == "pso":
             self.text = ("Algorithm: "+ ("Particle Swarm Optimization" if PSO.frames[StartPage].algorithm else "Gradient Descent") + " on function: " + PSO.frames[StartPage].function + "."+"\nPopulation="+str(PSO.frames[StartPage].population)+";iterations="+str(PSO.frames[StartPage].iterations)+"\nomega="+str(PSO.frames[StartPage].omega)+" social constant="+str(PSO.frames[StartPage].social)+" cognitive constant="+str(PSO.frames[StartPage].cognitive))
@@ -526,7 +609,7 @@ class VisualizationPage(tk.Frame):
         """
         Step-by-step simulation of PSO/GD based on the selected parameters. Press multiple times to advance.
         """
-        global data, cost, av_cost, i, ani
+        global data, cost, av_cost, agent, i, ani
         if ani1 is not None:
             ani1.event_source.stop()
         if self.first_run:
@@ -555,15 +638,19 @@ class VisualizationPage(tk.Frame):
             elif PSO.frames[StartPage].algorithm == "gd":
                 data, cost = gradient_descent.gradient_descent(function=self.function, iterations=self.iterations, population=self.population)
                 data = np.array(data)
+                av_cost = None
                 cont_data, cont_scatters, cont_lines = self.contour_plot_step(data,i)
                 surf_data, surf_zs, surf_scatters, surf_lines = self.surface_plot_step(data,i)
                 self.cost_plot(cost)
             elif PSO.frames[StartPage].algorithm == "ea":
-                _, _, data, cost = differential_evolution(differential_weight=PSO.frames[StartPage].omega, crossover=PSO.frames[StartPage].crossover, function=self.function, population=PSO.frames[StartPage].population, max_iterations=PSO.frames[StartPage].iterations)
+                agent, cost, data = differential_evolution(differential_weight=PSO.frames[StartPage].omega, crossover=PSO.frames[StartPage].crossover, function=self.function, population=PSO.frames[StartPage].population, max_iterations=PSO.frames[StartPage].iterations)
                 data = np.array(data)
                 cont_data, cont_scatters, cont_lines = self.contour_plot_step(data,i)
                 surf_data, surf_zs, surf_scatters, surf_lines = self.surface_plot_step(data,i)
+                cost = np.array(cost)
+                av_cost = None
                 self.cost_plot(cost)
+                self.best_agent_contour_plot_step(np.array(agent), i)
             else: #default to PSO
                 data, cost, av_cost = particle_swarm_optimization.pso(population=PSO.frames[StartPage].population, iterations=PSO.frames[StartPage].iterations, function=self.function, optimize_a=False, a=PSO.frames[StartPage].omega, b=PSO.frames[StartPage].social, c=PSO.frames[StartPage].cognitive)
                 data = np.array(data)
@@ -577,6 +664,9 @@ class VisualizationPage(tk.Frame):
                 self.label2.config(text=self.text)
             elif PSO.frames[StartPage].algorithm == "gd":
                 self.text = ("Algorithm: "+ ("Gradient Descent" if PSO.frames[StartPage].algorithm else "Gradient Descent") + " on function: " + PSO.frames[StartPage].function + ".")
+                self.label2.config(text=self.text)
+            elif PSO.frames[StartPage].algorithm == "ea":
+                self.text = ("Algorithm: "+ ("Evolutionary Algorithm" if PSO.frames[StartPage].algorithm else "Evolutionary Algorithm") + " on function: " + PSO.frames[StartPage].function + "."+"\nPopulation="+str(PSO.frames[StartPage].population)+";iterations="+str(PSO.frames[StartPage].iterations)+"\ndifferential weight="+str(PSO.frames[StartPage].omega)+" crossover="+str(PSO.frames[StartPage].crossover))
                 self.label2.config(text=self.text)
             i+=1
             self.iterations_slider.set(i)
@@ -595,7 +685,10 @@ class VisualizationPage(tk.Frame):
             cont_data, cont_scatters, cont_lines = self.contour_plot_step(data,i)
             surf_data, surf_zs, surf_scatters, surf_lines = self.surface_plot_step(data,i)
             self.cost_plot(cost)
-            self.av_cost_plot(av_cost)
+            if av_cost is not None:
+                self.av_cost_plot(av_cost)
+            else:
+                self.best_agent_contour_plot_step(np.array(agent),i)
             # automatically increase time step
             i+=1
             self.iterations_slider.set(i)

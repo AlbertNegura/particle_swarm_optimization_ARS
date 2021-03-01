@@ -82,14 +82,13 @@ def differential_evolution(crossover = 0.9, differential_weight = 0.8, populatio
         if (target_fitness != None) and (target_fitness == best_fitness):
             end = True
 
-    # not sure if there is a numpy method that allows to find a minimum in an array based on a specific function
+    # calculate total fitness for all agents
+    fitnesses = np.array([[evaluate(function, agent) for agent in agents] for agents in agents_history])
+    sum_fitness = [np.sum(fitnesses[:,i]) for i in range(population)]
+    best_agent_id = np.argmin(sum_fitness)
     best_fitness = np.inf
-    best_agent = None
-    for agent_pos in agents:
-        agent_fitness = evaluate(function, agent_pos)
-        if agent_fitness <= best_fitness:
-            best_fitness = agent_fitness
-            best_agent = agent_pos
+    best_agent = agents_history[:,best_agent_id,:]
+    best_fitness = fitnesses[:,best_agent_id]
     return best_agent, best_fitness, agents_history #best_fitness_history
 
 
