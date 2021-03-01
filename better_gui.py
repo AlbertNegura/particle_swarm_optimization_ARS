@@ -72,6 +72,7 @@ class StartPage(tk.Frame):
     omega = 0.9
     crossover = 0.9
     mutation = 0.1
+    selection = "elitism"
     def __init__(self, parent, controller):
         tk.Frame.__init__(self,parent)
         label1 = ttk.Label(self, text=("""Particle Swarm Optimization Visualization\nAuthors: Julien Havel, Kamil Inglot, Albert Negura, Sergi Nogues"""), font=LARGE_FONT)
@@ -93,7 +94,7 @@ class StartPage(tk.Frame):
         self.iterations_slider.pack()
 
 
-        label2 = ttk.Label(self, text=("""Select function to minimize."""), font=LARGE_FONT)
+        label2 = ttk.Label(self, text=("""Select function to minimize:"""), font=LARGE_FONT)
         label2.pack(pady=10,padx=10)
         self.function = "rosenbrock"
         self.func_var = IntVar(self)
@@ -103,7 +104,7 @@ class StartPage(tk.Frame):
         self.function_radio2.pack()
 
 
-        label3 = ttk.Label(self, text=("""Select algorithm (note that gradient descent is independent of sliders and neighbourhood selection)."""), font=LARGE_FONT)
+        label3 = ttk.Label(self, text=("""Select algorithm:"""), font=LARGE_FONT)
         label3.pack(pady=10,padx=10)
         self.algorithm = "pso"
         self.alg_var = IntVar(self)
@@ -116,17 +117,17 @@ class StartPage(tk.Frame):
         self.algorithm_radio4 = ttk.Radiobutton(self, text="Genetic Evolution (GA)", variable=self.alg_var, value=3, command=self.set_algo)
         self.algorithm_radio4.pack()
 
-        label4 = ttk.Label(self, text=("""Select neighbourhood behaviour for PSO."""), font=LARGE_FONT)
+        label4 = ttk.Label(self, text=("""Select neighbourhood behaviour for PSO:"""), font=LARGE_FONT)
         label4.pack(pady=10,padx=10)
         self.neighbourhood = "global"
         self.neigh_var = IntVar(self)
-        self.neighbourhood_radio1 = ttk.Radiobutton(self, text="Global Neighbourhood (DEFAULT)", variable=self.neigh_var, value=0, command=self.set_neighbourhood)
+        self.neighbourhood_radio1 = ttk.Radiobutton(self, text="Global Neighbourhood / Elitism Selection with 20% of population (PSO/GA - DEFAULT)", variable=self.neigh_var, value=0, command=self.set_neighbourhood)
         self.neighbourhood_radio1.pack()
-        self.neighbourhood_radio2 = ttk.Radiobutton(self, text="Social Neighbourhood with 2 Neighbours", variable=self.neigh_var, value=1, command=self.set_neighbourhood)
+        self.neighbourhood_radio2 = ttk.Radiobutton(self, text="Social Neighbourhood with 2 Neighbours / Tournament Selection with 50% of population (PSO/GA)", variable=self.neigh_var, value=1, command=self.set_neighbourhood)
         self.neighbourhood_radio2.pack()
-        self.neighbourhood_radio3 = ttk.Radiobutton(self, text="Social Neighbourhood with 4 Neighbours", variable=self.neigh_var, value=2, command=self.set_neighbourhood)
+        self.neighbourhood_radio3 = ttk.Radiobutton(self, text="Social Neighbourhood with 4 Neighbours / Roulette Selection with 20% of population (PSO/GA)", variable=self.neigh_var, value=2, command=self.set_neighbourhood)
         self.neighbourhood_radio3.pack()
-        self.neighbourhood_radio4 = ttk.Radiobutton(self, text="Geographical Neighbourhood with 2 Nearest Neighbours", variable=self.neigh_var, value=3, command=self.set_neighbourhood)
+        self.neighbourhood_radio4 = ttk.Radiobutton(self, text="Geographical Neighbourhood with 2 Nearest Neighbours / Steady State Selection with 80% of population (PSO/GA)", variable=self.neigh_var, value=3, command=self.set_neighbourhood)
         self.neighbourhood_radio4.pack()
 
         button1 = ttk.Button(self, text="Visualize",
@@ -150,6 +151,7 @@ class StartPage(tk.Frame):
         Sets the neighbourhood based on radio buttons.
         """
         self.neighbourhood = "global" if self.neigh_var.get()==0 else "social-two"  if self.neigh_var.get()==1 else "social-four" if self.neigh_var.get()==2  else "geographical"
+        self.selection = "elitism" if self.neigh_var.get()==0 else "tournament"  if self.neigh_var.get()==1 else "roulette" if self.neigh_var.get()==2  else "steady"
 
     def set_algo(self):
         """
@@ -183,6 +185,7 @@ class StartPage(tk.Frame):
         self.population = self.population_slider.get()
         self.iterations = self.iterations_slider.get()
         self.neighbourhood = "global" if self.neigh_var.get()==0 else "social-two"  if self.neigh_var.get()==1 else "social-four" if self.neigh_var.get()==2  else "geographical"
+        self.selection = "elitism" if self.neigh_var.get()==0 else "tournament"  if self.neigh_var.get()==1 else "roulette" if self.neigh_var.get()==2  else "steady"
         self.function = "rosenbrock" if self.func_var.get()==0 else "rastrigin"
         self.algorithm = "pso" if self.alg_var.get()==0 else "gd" if self.alg_var.get()==1 else "ea" if self.alg_var.get()==2 else "ga"
 
@@ -587,7 +590,7 @@ class VisualizationPage(tk.Frame):
             self.cost_plot(cost)
             cont_data2, cont_scatters2, cont_lines2 = self.best_agent_contour_plot(np.array(agent))
         elif PSO.frames[StartPage].algorithm == "ga":
-            agent, cost, data = genetic_algorithm(mutation=PSO.frames[StartPage].mutation, crossover=PSO.frames[StartPage].crossover, function=self.function, population=PSO.frames[StartPage].population, max_iterations=PSO.frames[StartPage].iterations)
+            agent, cost, data = genetic_algorithm(mutation=PSO.frames[StartPage].mutation, selection=PSO.frames[StartPage].selection, function=self.function, population=PSO.frames[StartPage].population, max_iterations=PSO.frames[StartPage].iterations)
             data = np.array(data)
             cont_data, cont_scatters, cont_lines = self.contour_plot(data)
             surf_data, surf_zs, surf_scatters, surf_lines = self.surface_plot(data)
@@ -671,7 +674,7 @@ class VisualizationPage(tk.Frame):
                 self.cost_plot(cost)
                 self.best_agent_contour_plot_step(np.array(agent), i)
             elif PSO.frames[StartPage].algorithm == "ga":
-                agent, cost, data = genetic_algorithm(mutation=PSO.frames[StartPage].omega, crossover=PSO.frames[StartPage].crossover, function=self.function, population=PSO.frames[StartPage].population, max_iterations=PSO.frames[StartPage].iterations)
+                agent, cost, data = genetic_algorithm(mutation=PSO.frames[StartPage].omega, selection=PSO.frames[StartPage].selection, function=self.function, population=PSO.frames[StartPage].population, max_iterations=PSO.frames[StartPage].iterations)
                 data = np.array(data)
                 cont_data, cont_scatters, cont_lines = self.contour_plot_step(data,i)
                 surf_data, surf_zs, surf_scatters, surf_lines = self.surface_plot_step(data,i)
