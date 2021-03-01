@@ -6,6 +6,7 @@ Kamil Inglot
 Albert Negura
 Sergi Nogues Farres
 """
+import numpy as np
 
 def evaluate(function, position):
     """
