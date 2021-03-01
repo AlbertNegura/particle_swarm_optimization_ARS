@@ -47,13 +47,11 @@ def differential_evolution(crossover = 0.9, differential_weight = 0.8, populatio
     end = False
     iteration = 0
     best_fitness = None
-    agents_history = np.zeros((len(agents),max_iterations,1,2))
-    iteration_history = np.array([])
+    agents_history = np.zeros((len(agents),max_iterations,2))
     while not end:
 
         for x in range(len(agents)):
             new_agent = [0 for _ in range(dimensions)]
-            iteration_history = []
             temp = []
             while len(temp) < 3:
                 rand_agent = random.randint(0, len(agents)-1)
@@ -74,9 +72,7 @@ def differential_evolution(crossover = 0.9, differential_weight = 0.8, populatio
             if evaluate(function, new_agent) <= evaluate(function, agents[x]):
                 agents[x] = new_agent
 
-            iteration_history.append(new_agent)
-
-            agents_history[x] = iteration_history
+            agents_history[x] = new_agent
 
         iteration += 1
         if (max_iterations != None) and (max_iterations == iteration):
@@ -92,6 +88,7 @@ def differential_evolution(crossover = 0.9, differential_weight = 0.8, populatio
         if agent_fitness <= best_fitness:
             best_fitness = agent_fitness
             best_agent = agent_pos
+    agents_history = agents_history.swapaxes(0,1)
     return best_agent, best_fitness, agents_history #best_fitness_history
 
 
