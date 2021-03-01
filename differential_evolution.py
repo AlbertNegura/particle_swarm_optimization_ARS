@@ -26,7 +26,7 @@ def differential_evolution(crossover = 0.9, differential_weight = 0.8, populatio
     - while(not end) : (end can be number of iterations, adequate fitness reached, ...)
         - for each agent :
             - pick 3 other agents at random
-            - pick a rondom index (bounded by size of problem)
+            - pick a random index (bounded by size of problem)
 
             - for each index :
                 - pick a uniformly distributed random number ri ~ U(0,1)
@@ -43,12 +43,15 @@ def differential_evolution(crossover = 0.9, differential_weight = 0.8, populatio
     """
     bounds = [-2.4, 2.4] if function == "rosenbrock" else [-5.12, 5.12]
 
-    agents = [[random.uniform(bounds[0], bounds[1]) for _ in range(dimensions)] for _ in range(population)]
+    agents = [[np.random.uniform(low=bounds[0], high=bounds[1]) for _ in range(dimensions)] for _ in range(population)]
+    for agent in agents:
+        np.clip(agent, bounds[0], bounds[1])
     end = False
     iteration = 0
     best_fitness = None
-    agents_history = np.zeros((len(agents),max_iterations,2))
+    agents_history = np.zeros((max_iterations,len(agents),2),dtype=float)
     while not end:
+        iteration_history = []
 
         for x in range(len(agents)):
             new_agent = [0 for _ in range(dimensions)]
@@ -68,12 +71,11 @@ def differential_evolution(crossover = 0.9, differential_weight = 0.8, populatio
                     new_agent[index] = agents[a][index] + differential_weight * (agents[b][index] - agents[c][index])
                 else:
                     new_agent[index] = agents[x][index]
-
             if evaluate(function, new_agent) <= evaluate(function, agents[x]):
                 agents[x] = new_agent
+            iteration_history.append(new_agent)
 
-            agents_history[x] = new_agent
-
+        agents_history[iteration] = np.clip(iteration_history,bounds[0],bounds[1])
         iteration += 1
         if (max_iterations != None) and (max_iterations == iteration):
             end = True
@@ -88,7 +90,6 @@ def differential_evolution(crossover = 0.9, differential_weight = 0.8, populatio
         if agent_fitness <= best_fitness:
             best_fitness = agent_fitness
             best_agent = agent_pos
-    agents_history = agents_history.swapaxes(0,1)
     return best_agent, best_fitness, agents_history #best_fitness_history
 
 
