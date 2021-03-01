@@ -125,7 +125,7 @@ class StartPage(tk.Frame):
         self.neighbourhood_radio1.pack()
         self.neighbourhood_radio2 = ttk.Radiobutton(self, text="Social Neighbourhood with 2 Neighbours / Tournament Selection with 50% of population (PSO/GA)", variable=self.neigh_var, value=1, command=self.set_neighbourhood)
         self.neighbourhood_radio2.pack()
-        self.neighbourhood_radio3 = ttk.Radiobutton(self, text="Social Neighbourhood with 4 Neighbours / Roulette Selection with 20% of population (PSO/GA)", variable=self.neigh_var, value=2, command=self.set_neighbourhood)
+        self.neighbourhood_radio3 = ttk.Radiobutton(self, text="Social Neighbourhood with 4 Neighbours / Roulette Selection (PSO/GA)", variable=self.neigh_var, value=2, command=self.set_neighbourhood)
         self.neighbourhood_radio3.pack()
         self.neighbourhood_radio4 = ttk.Radiobutton(self, text="Geographical Neighbourhood with 2 Nearest Neighbours / Steady State Selection with 80% of population (PSO/GA)", variable=self.neigh_var, value=3, command=self.set_neighbourhood)
         self.neighbourhood_radio4.pack()

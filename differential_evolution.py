@@ -150,9 +150,26 @@ def genetic_algorithm(mutation = 0.1, population = 10, function="rosenbrock", ma
         if selection == "elitism" or selection == "steady":
             selected_agents = np.argpartition(fitness_history[iteration], num_selected)
         elif selection == "tournament":
-            pass
+            random_order = np.random.choice(range(population),population, replace=False)
+            left_bracket = random_order[:num_selected]
+            right_bracket = random_order[num_selected:]
+            for i in range(num_selected):
+                selected_agent = left_bracket[i] if fitness_history[iteration][left_bracket[i]] > fitness_history[iteration][right_bracket[i]]  else right_bracket[i] if fitness_history[iteration][left_bracket[i]] < fitness_history[iteration][right_bracket[i]] else np.random.choice([left_bracket[i],right_bracket[i]])
+                selected_agents.append(selected_agent)
         elif selection == "roulette":
-            pass
+            total_fitness = np.sum(fitness_history[iteration])
+            random_order = np.random.choice(range(population), population, replace=False)
+            roulette_selection = {int(i) : fitness_history[iteration][int(i)] for i in random_order}
+            chance = np.random.uniform(0, total_fitness)
+            i = 0
+            current = 0
+            for key, value in roulette_selection.items():
+                current += value
+                if current > chance:
+                    selected_agents.append(key)
+                    i+=1
+                    if i >= num_selected:
+                        break
         else: # in case of error, default to elitism
             selected_agents = np.argpartition(fitness_history[iteration], num_selected)
         for x in range(len(agents)):
@@ -160,10 +177,15 @@ def genetic_algorithm(mutation = 0.1, population = 10, function="rosenbrock", ma
                 new_agent = agents[x]
             else:
                 # CROSSOVER
-                dad = np.random.choice(selected_agents)
-                mom = np.random.choice(selected_agents)
-                while dad == mom:
+                if len(selected_agents) > 0:
+                    dad = np.random.choice(selected_agents)
                     mom = np.random.choice(selected_agents)
+                    while dad == mom:
+                        mom = np.random.choice(selected_agents)
+                else: # Roulette selection is special
+                    parents = np.random.choice(range(population),2,replace=False)
+                    dad = parents[0]
+                    mom = parents[1]
                 new_agent = cross_over(agents[dad],agents[mom])
                 # MUTATION
                 if np.random.rand() < mutation:
